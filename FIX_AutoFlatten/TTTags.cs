@@ -1,22 +1,3 @@
-/***************************************************************************
- *    
- *      Copyright (c) 2009 Trading Technologies International, Inc.
- *                     All Rights Reserved Worldwide
- *
- *        * * *   S T R I C T L Y   P R O P R I E T A R Y   * * *
- *
- * WARNING:  This file is the confidential property of Trading Technologies
- * International, Inc. and is to be maintained in strict confidence.  For
- * use only by those with the express written permission and license from
- * Trading Technologies International, Inc.  Unauthorized reproduction,
- * distribution, use or disclosure of this file or any program (or document)
- * derived from it is prohibited by State and Federal law, and by local law
- * outside of the U.S. 
- *
- ***************************************************************************
- * $Date: 2009/12/04 15:00:00EST $
- * $Revision: 1.0 $
- ***************************************************************************/
 
 using System;
 
