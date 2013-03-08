@@ -1,0 +1,109 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="dsRisk" targetNamespace="http://tempuri.org/dsRisk.xsd" xmlns:mstns="http://tempuri.org/dsRisk.xsd" xmlns="http://tempuri.org/dsRisk.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections />
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="dsRisk" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:Generator_UserDSName="dsRisk" msprop:Generator_DataSetName="dsRisk" msprop:EnableTableAdapterManager="true">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="tblPositions" msprop:Generator_UserTableName="tblPositions" msprop:Generator_RowDeletedName="tblPositionsRowDeleted" msprop:Generator_RowChangedName="tblPositionsRowChanged" msprop:Generator_RowClassName="tblPositionsRow" msprop:Generator_RowChangingName="tblPositionsRowChanging" msprop:Generator_RowEvArgName="tblPositionsRowChangeEvent" msprop:Generator_RowEvHandlerName="tblPositionsRowChangeEventHandler" msprop:Generator_TableClassName="tblPositionsDataTable" msprop:Generator_TableVarName="tabletblPositions" msprop:Generator_RowDeletingName="tblPositionsRowDeleting" msprop:Generator_TablePropName="tblPositions">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="MGT" msprop:Generator_UserColumnName="MGT" msprop:Generator_ColumnVarNameInTable="columnMGT" msprop:Generator_ColumnPropNameInRow="MGT" msprop:Generator_ColumnPropNameInTable="MGTColumn" type="xs:string" />
+              <xs:element name="SecurityExchange" msprop:Generator_UserColumnName="SecurityExchange" msprop:Generator_ColumnPropNameInRow="SecurityExchange" msprop:Generator_ColumnVarNameInTable="columnSecurityExchange" msprop:Generator_ColumnPropNameInTable="SecurityExchangeColumn" type="xs:string" />
+              <xs:element name="Symbol" msprop:Generator_UserColumnName="Symbol" msprop:Generator_ColumnPropNameInRow="Symbol" msprop:Generator_ColumnVarNameInTable="columnSymbol" msprop:Generator_ColumnPropNameInTable="SymbolColumn" type="xs:string" />
+              <xs:element name="SecurityID" msprop:Generator_UserColumnName="SecurityID" msprop:Generator_ColumnPropNameInRow="SecurityID" msprop:Generator_ColumnVarNameInTable="columnSecurityID" msprop:Generator_ColumnPropNameInTable="SecurityIDColumn" type="xs:string" />
+              <xs:element name="BuyPos" msprop:Generator_UserColumnName="BuyPos" msprop:nullValue="0" msprop:Generator_ColumnVarNameInTable="columnBuyPos" msprop:Generator_ColumnPropNameInTable="BuyPosColumn" msprop:Generator_ColumnPropNameInRow="BuyPos" type="xs:int" default="0" minOccurs="0" />
+              <xs:element name="SellPos" msprop:Generator_UserColumnName="SellPos" msprop:nullValue="0" msprop:Generator_ColumnVarNameInTable="columnSellPos" msprop:Generator_ColumnPropNameInTable="SellPosColumn" msprop:Generator_ColumnPropNameInRow="SellPos" type="xs:int" default="0" minOccurs="0" />
+              <xs:element name="AvgBuy" msprop:Generator_UserColumnName="AvgBuy" msprop:nullValue="0" msprop:Generator_ColumnVarNameInTable="columnAvgBuy" msprop:Generator_ColumnPropNameInTable="AvgBuyColumn" msprop:Generator_ColumnPropNameInRow="AvgBuy" type="xs:double" default="0" minOccurs="0" />
+              <xs:element name="AvgSell" msprop:Generator_UserColumnName="AvgSell" msprop:nullValue="0" msprop:Generator_ColumnVarNameInTable="columnAvgSell" msprop:Generator_ColumnPropNameInTable="AvgSellColumn" msprop:Generator_ColumnPropNameInRow="AvgSell" type="xs:double" default="0" minOccurs="0" />
+              <xs:element name="RealizedPL" msprop:Generator_UserColumnName="RealizedPL" msprop:nullValue="0" msprop:Generator_ColumnPropNameInRow="RealizedPL" msprop:Generator_ColumnPropNameInTable="RealizedPLColumn" msprop:Generator_ColumnVarNameInTable="columnRealizedPL" type="xs:double" default="0" minOccurs="0" />
+              <xs:element name="UnrealizedPL" msprop:Generator_UserColumnName="UnrealizedPL" msprop:nullValue="0" msprop:Generator_ColumnPropNameInRow="UnrealizedPL" msprop:Generator_ColumnPropNameInTable="UnrealizedPLColumn" msprop:Generator_ColumnVarNameInTable="columnUnrealizedPL" type="xs:double" default="0" minOccurs="0" />
+              <xs:element name="ExchangeGateway" msprop:Generator_UserColumnName="ExchangeGateway" msprop:Generator_ColumnPropNameInRow="ExchangeGateway" msprop:Generator_ColumnVarNameInTable="columnExchangeGateway" msprop:Generator_ColumnPropNameInTable="ExchangeGatewayColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="Account" msprop:Generator_UserColumnName="Account" msprop:Generator_ColumnVarNameInTable="columnAccount" msprop:Generator_ColumnPropNameInRow="Account" msprop:Generator_ColumnPropNameInTable="AccountColumn" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="tblGateways" msprop:Generator_UserTableName="tblGateways" msprop:Generator_RowDeletedName="tblGatewaysRowDeleted" msprop:Generator_RowChangedName="tblGatewaysRowChanged" msprop:Generator_RowClassName="tblGatewaysRow" msprop:Generator_RowChangingName="tblGatewaysRowChanging" msprop:Generator_RowEvArgName="tblGatewaysRowChangeEvent" msprop:Generator_RowEvHandlerName="tblGatewaysRowChangeEventHandler" msprop:Generator_TableClassName="tblGatewaysDataTable" msprop:Generator_TableVarName="tabletblGateways" msprop:Generator_RowDeletingName="tblGatewaysRowDeleting" msprop:Generator_TablePropName="tblGateways">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Exchange" msprop:Generator_UserColumnName="Exchange" msprop:Generator_ColumnPropNameInRow="Exchange" msprop:Generator_ColumnVarNameInTable="columnExchange" msprop:Generator_ColumnPropNameInTable="ExchangeColumn" type="xs:string" />
+              <xs:element name="PRICE" msprop:Generator_UserColumnName="PRICE" msprop:Generator_ColumnPropNameInRow="PRICE" msprop:Generator_ColumnVarNameInTable="columnPRICE" msprop:Generator_ColumnPropNameInTable="PRICEColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="ORDER" msprop:Generator_UserColumnName="ORDER" msprop:Generator_ColumnPropNameInRow="ORDER" msprop:Generator_ColumnVarNameInTable="columnORDER" msprop:Generator_ColumnPropNameInTable="ORDERColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="FILL" msprop:Generator_UserColumnName="FILL" msprop:Generator_ColumnPropNameInRow="FILL" msprop:Generator_ColumnVarNameInTable="columnFILL" msprop:Generator_ColumnPropNameInTable="FILLColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="TEXT" msprop:Generator_UserColumnName="TEXT" msprop:Generator_ColumnPropNameInRow="TEXT" msprop:Generator_ColumnVarNameInTable="columnTEXT" msprop:Generator_ColumnPropNameInTable="TEXTColumn" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="tblTrader" msprop:Generator_UserTableName="tblTrader" msprop:Generator_RowDeletedName="tblTraderRowDeleted" msprop:Generator_RowChangedName="tblTraderRowChanged" msprop:Generator_RowClassName="tblTraderRow" msprop:Generator_RowChangingName="tblTraderRowChanging" msprop:Generator_RowEvArgName="tblTraderRowChangeEvent" msprop:Generator_RowEvHandlerName="tblTraderRowChangeEventHandler" msprop:Generator_TableClassName="tblTraderDataTable" msprop:Generator_TableVarName="tabletblTrader" msprop:Generator_RowDeletingName="tblTraderRowDeleting" msprop:Generator_TablePropName="tblTrader">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="MGT" msprop:Generator_UserColumnName="MGT" msprop:Generator_ColumnVarNameInTable="columnMGT" msprop:Generator_ColumnPropNameInRow="MGT" msprop:Generator_ColumnPropNameInTable="MGTColumn" type="xs:string" />
+              <xs:element name="Account" msprop:Generator_UserColumnName="Account" msprop:Generator_ColumnVarNameInTable="columnAccount" msprop:Generator_ColumnPropNameInRow="Account" msprop:Generator_ColumnPropNameInTable="AccountColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="Limit" msprop:Generator_UserColumnName="Limit" msprop:Generator_ColumnVarNameInTable="columnLimit" msprop:Generator_ColumnPropNameInRow="Limit" msprop:Generator_ColumnPropNameInTable="LimitColumn" type="xs:double" minOccurs="0" />
+              <xs:element name="TotalPL" msprop:Generator_UserColumnName="TotalPL" msprop:Generator_ColumnVarNameInTable="columnTotalPL" msprop:Generator_ColumnPropNameInRow="TotalPL" msprop:Generator_ColumnPropNameInTable="TotalPLColumn" type="xs:double" minOccurs="0" />
+              <xs:element name="EmailAlert" msprop:Generator_UserColumnName="EmailAlert" msprop:Generator_ColumnVarNameInTable="columnEmailAlert" msprop:Generator_ColumnPropNameInRow="EmailAlert" msprop:Generator_ColumnPropNameInTable="EmailAlertColumn" type="xs:int" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="tblSecurity" msprop:Generator_UserTableName="tblSecurity" msprop:Generator_RowDeletedName="tblSecurityRowDeleted" msprop:Generator_RowChangedName="tblSecurityRowChanged" msprop:Generator_RowClassName="tblSecurityRow" msprop:Generator_RowChangingName="tblSecurityRowChanging" msprop:Generator_RowEvArgName="tblSecurityRowChangeEvent" msprop:Generator_RowEvHandlerName="tblSecurityRowChangeEventHandler" msprop:Generator_TableClassName="tblSecurityDataTable" msprop:Generator_TableVarName="tabletblSecurity" msprop:Generator_RowDeletingName="tblSecurityRowDeleting" msprop:Generator_TablePropName="tblSecurity">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="SecurityExchange" msprop:Generator_UserColumnName="SecurityExchange" msprop:Generator_ColumnPropNameInRow="SecurityExchange" msprop:Generator_ColumnVarNameInTable="columnSecurityExchange" msprop:Generator_ColumnPropNameInTable="SecurityExchangeColumn" type="xs:string" />
+              <xs:element name="Symbol" msprop:Generator_UserColumnName="Symbol" msprop:Generator_ColumnPropNameInRow="Symbol" msprop:Generator_ColumnVarNameInTable="columnSymbol" msprop:Generator_ColumnPropNameInTable="SymbolColumn" type="xs:string" />
+              <xs:element name="SecurityID" msprop:Generator_UserColumnName="SecurityID" msprop:Generator_ColumnPropNameInRow="SecurityID" msprop:Generator_ColumnVarNameInTable="columnSecurityID" msprop:Generator_ColumnPropNameInTable="SecurityIDColumn" type="xs:string" />
+              <xs:element name="Currency" msprop:Generator_UserColumnName="Currency" msprop:Generator_ColumnPropNameInRow="Currency" msprop:Generator_ColumnVarNameInTable="columnCurrency" msprop:Generator_ColumnPropNameInTable="CurrencyColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="ExchangePointValue" msprop:Generator_UserColumnName="ExchangePointValue" msprop:Generator_ColumnPropNameInRow="ExchangePointValue" msprop:Generator_ColumnVarNameInTable="columnExchangePointValue" msprop:Generator_ColumnPropNameInTable="ExchangePointValueColumn" type="xs:double" minOccurs="0" />
+              <xs:element name="BidPrice" msprop:Generator_UserColumnName="BidPrice" msprop:Generator_ColumnPropNameInRow="BidPrice" msprop:Generator_ColumnVarNameInTable="columnBidPrice" msprop:Generator_ColumnPropNameInTable="BidPriceColumn" type="xs:double" minOccurs="0" />
+              <xs:element name="AskPrice" msprop:Generator_UserColumnName="AskPrice" msprop:Generator_ColumnPropNameInRow="AskPrice" msprop:Generator_ColumnVarNameInTable="columnAskPrice" msprop:Generator_ColumnPropNameInTable="AskPriceColumn" type="xs:double" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="tblCurrency" msprop:Generator_UserTableName="tblCurrency" msprop:Generator_RowDeletedName="tblCurrencyRowDeleted" msprop:Generator_RowChangedName="tblCurrencyRowChanged" msprop:Generator_RowClassName="tblCurrencyRow" msprop:Generator_RowChangingName="tblCurrencyRowChanging" msprop:Generator_RowEvArgName="tblCurrencyRowChangeEvent" msprop:Generator_RowEvHandlerName="tblCurrencyRowChangeEventHandler" msprop:Generator_TableClassName="tblCurrencyDataTable" msprop:Generator_TableVarName="tabletblCurrency" msprop:Generator_RowDeletingName="tblCurrencyRowDeleting" msprop:Generator_TablePropName="tblCurrency">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Currency" msprop:Generator_UserColumnName="Currency" msprop:Generator_ColumnPropNameInRow="Currency" msprop:Generator_ColumnVarNameInTable="columnCurrency" msprop:Generator_ColumnPropNameInTable="CurrencyColumn" type="xs:string" />
+              <xs:element name="USD" msprop:Generator_UserColumnName="USD" msprop:Generator_ColumnPropNameInRow="USD" msprop:Generator_ColumnVarNameInTable="columnUSD" msprop:Generator_ColumnPropNameInTable="USDColumn" type="xs:double" minOccurs="0" />
+              <xs:element name="EUR" msprop:Generator_UserColumnName="EUR" msprop:Generator_ColumnPropNameInRow="EUR" msprop:Generator_ColumnVarNameInTable="columnEUR" msprop:Generator_ColumnPropNameInTable="EURColumn" type="xs:double" minOccurs="0" />
+              <xs:element name="GBP" msprop:Generator_UserColumnName="GBP" msprop:Generator_ColumnPropNameInRow="GBP" msprop:Generator_ColumnVarNameInTable="columnGBP" msprop:Generator_ColumnPropNameInTable="GBPColumn" type="xs:double" minOccurs="0" />
+              <xs:element name="JPY" msprop:Generator_UserColumnName="JPY" msprop:Generator_ColumnPropNameInRow="JPY" msprop:Generator_ColumnVarNameInTable="columnJPY" msprop:Generator_ColumnPropNameInTable="JPYColumn" type="xs:double" minOccurs="0" />
+              <xs:element name="CAD" msprop:Generator_UserColumnName="CAD" msprop:Generator_ColumnPropNameInRow="CAD" msprop:Generator_ColumnVarNameInTable="columnCAD" msprop:Generator_ColumnPropNameInTable="CADColumn" type="xs:double" minOccurs="0" />
+              <xs:element name="AUS" msprop:Generator_UserColumnName="AUS" msprop:Generator_ColumnPropNameInRow="AUS" msprop:Generator_ColumnVarNameInTable="columnAUS" msprop:Generator_ColumnPropNameInTable="AUSColumn" type="xs:double" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+    <xs:unique name="Constraint1" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//mstns:tblPositions" />
+      <xs:field xpath="mstns:MGT" />
+      <xs:field xpath="mstns:SecurityExchange" />
+      <xs:field xpath="mstns:Symbol" />
+      <xs:field xpath="mstns:SecurityID" />
+    </xs:unique>
+    <xs:unique name="tblGateways_Constraint1" msdata:ConstraintName="Constraint1" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//mstns:tblGateways" />
+      <xs:field xpath="mstns:Exchange" />
+    </xs:unique>
+    <xs:unique name="tblTrader_Constraint1" msdata:ConstraintName="Constraint1" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//mstns:tblTrader" />
+      <xs:field xpath="mstns:MGT" />
+    </xs:unique>
+    <xs:unique name="tblSecurity_Constraint1" msdata:ConstraintName="Constraint1" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//mstns:tblSecurity" />
+      <xs:field xpath="mstns:SecurityExchange" />
+      <xs:field xpath="mstns:Symbol" />
+      <xs:field xpath="mstns:SecurityID" />
+    </xs:unique>
+    <xs:unique name="tblCurrency_Constraint1" msdata:ConstraintName="Constraint1" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//mstns:tblCurrency" />
+      <xs:field xpath="mstns:Currency" />
+    </xs:unique>
+  </xs:element>
+</xs:schema>
