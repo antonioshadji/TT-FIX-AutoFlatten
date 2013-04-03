@@ -11,5 +11,6 @@ This sample application provides the following functionality:
   + Monitor P&L
   + At preconfigured Maximum Loss, flatten out all positions (If used in conjunction with credit limits this effectively                locks trader out of trading for the day
 
-**USE AT YOUR OWN RISK**\n
+**USE AT YOUR OWN RISK**
+
 This sample code is for demonstration purposes only and is not endorsed by Trading Technologies International, Inc.
