@@ -20,7 +20,7 @@ using System.Threading;
 
 namespace QuickFix
 {
-    public class QFApplication : QuickFix42.MessageCracker, QuickFix.Application
+    public class QFApplication :  QuickFix.MessageCracker , QuickFix.IApplication 
     {
         private static LOG.LogFiles log = new LOG.LogFiles();
         private bool previousTradesLoaded = false;
@@ -54,8 +54,8 @@ namespace QuickFix
         private QuickFix.SessionSettings _settings = null;
         private QuickFix.FileStoreFactory _storeFactory = null;
         private QuickFix.FileLogFactory _logFactory = null;
-        private QuickFix42.MessageFactory _messageFactory = null;
-        private QuickFix.ThreadedSocketInitiator _initiator = null;
+        private QuickFix.FIX42.MessageFactory _messageFactory = null;
+        private QuickFix.Transport.SocketInitiator _initiator = null;
 
         #region Delegates for transferring data to mainForm Thread
         //not used
@@ -139,7 +139,7 @@ namespace QuickFix
             string secID, 
             int tradesize, 
             char side,
-            double price,
+            decimal  price,
             string gateway);
         
         private ThreadSafeUpdatePositions _tsUP;
@@ -156,7 +156,7 @@ namespace QuickFix
             string secID, 
             int tradesize, 
             char side, 
-            double price,
+            decimal price,
             string gateway)
         {
 
@@ -172,13 +172,13 @@ namespace QuickFix
             }
         }
 
-        public delegate void ThreadSafeUpdateSecurity(string SecEx, string symbol, string secID, string cur, double exPointValue);
+        public delegate void ThreadSafeUpdateSecurity(string SecEx, string symbol, string secID, string cur, decimal exPointValue);
         private ThreadSafeUpdateSecurity _tsUS;
         public void registerSecurityUpdater(ThreadSafeUpdateSecurity fc)
         {
             _tsUS += fc;
         }
-        private void updateSecurity(string SecEx, string symbol, string secID, string cur, double exPointValue)
+        private void updateSecurity(string SecEx, string symbol, string secID, string cur, decimal exPointValue)
         {
             if (_control.InvokeRequired)
             {
@@ -208,13 +208,13 @@ namespace QuickFix
             }
         }
 
-        public delegate void threadsafeUpdatePrices(string SecEx, string symbol, string secID, double bid, double ask);
+        public delegate void threadsafeUpdatePrices(string SecEx, string symbol, string secID, decimal bid, decimal ask);
         private threadsafeUpdatePrices _tsUPrc;
         public void registerPriceUpdater(threadsafeUpdatePrices fc)
         {
             _tsUPrc += fc;
         }
-        private void updatePrices(string SecEx, string symbol, string secID, double bid, double ask)
+        private void updatePrices(string SecEx, string symbol, string secID, decimal bid, decimal ask)
         {
             if (_control.InvokeRequired)
             {
@@ -289,20 +289,20 @@ namespace QuickFix
                 _settings = new QuickFix.SessionSettings(cfg);
                 _storeFactory = new QuickFix.FileStoreFactory(_settings);
                 _logFactory = new QuickFix.FileLogFactory(_settings);
-                _messageFactory = new QuickFix42.MessageFactory();
+                _messageFactory = new QuickFix.FIX42.MessageFactory();
 
-                _initiator = new QuickFix.ThreadedSocketInitiator(this,
+                _initiator = new QuickFix.Transport.SocketInitiator(this,
                     _storeFactory,
                     _settings,
                     _logFactory,
                     _messageFactory);
 
-                _initiator.start();
+                _initiator.Start();
             }
             catch (Exception ex)
             { 
                 updateDisplay("QuickFIX Error"); 
-                log.WriteLog(ex.ToString()); 
+                log.WriteLog(ex.ToString());
             }
 
         }
@@ -312,29 +312,30 @@ namespace QuickFix
         /// </summary>
         /// <param name="message"></param>
         /// <param name="sessionID"></param>
-        public void parseMessage(QuickFix.Message message, QuickFix.SessionID sessionID)
+        public void ProcessMessage(QuickFix.Message message, QuickFix.SessionID sessionID)
         {
             
             try
             {
                 updateDisplay(string.Format("{0} {1}", DateTime.Now.ToString("hh:mm:ss.fff"), message.GetType().FullName));
 
-                foreach (QuickFix.Field f in message)
+                foreach (int i in message.FieldOrder)
                 {
-                    updateDisplay(string.Format("TAG: {0} = {1}", f.getField(), f));
+                    updateDisplay(string.Format("TAG: {0} = {1}", i, message.GetField(i) ));
                 }
 
-                if (message.hasGroup(TT.NoGateways.FIELD))
+
+                if (message.IsSetField(TT.NoGateways.FIELD))
                 { updateDisplay("TT.NoGateways"); }
 
-                if (message.hasGroup(TT.NoGatewayStatus.FIELD))
+                if (message.IsSetField(TT.NoGatewayStatus.FIELD))
                 { updateDisplay("TT.NoGatewayStatus"); }
 
-                if (message.hasGroup(QuickFix.NoMDEntries.FIELD))
-                { updateDisplay("QuickFix.NoMDEntries"); }
+                if (message.IsSetField(QuickFix.Fields.Tags.NoMDEntries))
+                { updateDisplay("QuickFix.Fields.NoMDEntries"); }
 
-                if (message.hasGroup(QuickFix.NoMDEntryTypes.FIELD))
-                { updateDisplay("QuickFix.NoMDEntryTypes"); }
+                if (message.IsSetField(QuickFix.Fields.Tags.NoMDEntryTypes))
+                { updateDisplay("QuickFix.Fields.NoMDEntryTypes"); }
 
             }
             catch (Exception ex)
@@ -346,16 +347,16 @@ namespace QuickFix
 
         #region QuickFix Implementation
 
-            public virtual void onCreate(QuickFix.SessionID session)
+            public virtual void OnCreate(QuickFix.SessionID session)
             {
                 updateDisplay(string.Format("onCreate: {0}", session));
 
-                if (string.Equals(session.getSessionQualifier().ToUpperInvariant(), "ORDER"))
+                if (string.Equals(session.SessionQualifier.ToUpperInvariant(), "ORDER"))
                 {
                     TT.SendMsg.orderSessionID = session;
                 }
 
-                if (string.Equals(session.getSessionQualifier().ToUpperInvariant(), "PRICE"))
+                if (string.Equals(session.SessionQualifier.ToUpperInvariant(), "PRICE"))
                 {
                     TT.SendMsg.priceSessionID = session;
                 }
@@ -369,11 +370,11 @@ namespace QuickFix
                 //TT.SendMsg.SetSender(session.getSenderCompID());
             }
 
-            public virtual void onLogon(QuickFix.SessionID session)
+            public virtual void OnLogon(QuickFix.SessionID session)
             {
-                log.WriteLog("onLogon: " + session.getTargetCompID()); //FIX4.2:SenderCompID->TargetCompID:SessionQualifier
+                log.WriteLog("onLogon: " + session.TargetCompID ); //FIX4.2:SenderCompID->TargetCompID:SessionQualifier
 
-                if (string.Equals(session.getSessionQualifier().ToUpperInvariant(), "ORDER"))
+                if (string.Equals(session.SessionQualifier.ToUpperInvariant(), "ORDER"))
                 {
                     //Add code to clear position table before downloading all trades
                     posReports.Clear();
@@ -381,7 +382,7 @@ namespace QuickFix
 
                     TT.SendMsg send = new TT.SendMsg();
 
-                    send.ttGatewayStatusRequest(QuickFix.SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES);
+                    send.ttGatewayStatusRequest(QuickFix.Fields.SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES);
 
                     send.ttRequestForPosition(TT.PosReqType.SOD);
                     send.ttRequestForPosition(TT.PosReqType.DSOD);
@@ -392,11 +393,11 @@ namespace QuickFix
 
             }
 
-            public virtual void onLogout(QuickFix.SessionID sessionID)
+            public virtual void OnLogout(QuickFix.SessionID sessionID)
             {
                 try
                 {
-                    updateDisplay("onLogout: " + sessionID.getTargetCompID());
+                    updateDisplay("onLogout: " + sessionID.TargetCompID);
 
                 }
                 catch (Exception ex)
@@ -406,23 +407,23 @@ namespace QuickFix
                 }
             }
 
-            public virtual void toAdmin(QuickFix.Message message, QuickFix.SessionID sessionID)
+            public virtual void ToAdmin(QuickFix.Message message, QuickFix.SessionID sessionID)
             {
                 try
                 {
-                    QuickFix.MsgType mt = new QuickFix.MsgType();
-                    message.getHeader().getField(mt);
+                    QuickFix.Fields.MsgType mt = new QuickFix.Fields.MsgType();
+                    message.Header.GetField(mt);
 
-                    if (mt.getValue() == QuickFix.MsgType.Logon )
+                    if (mt.getValue() == QuickFix.Fields.MsgType.LOGON )
                     {
                         if (!_password.Equals(""))
                         {
-                            message.setField(new QuickFix.RawData(_password));
+                            message.SetField(new QuickFix.Fields.RawData(_password));
                         }
 
                         if (_resetSession)
                         {
-                            message.setField(new QuickFix.ResetSeqNumFlag(true));
+                            message.SetField(new QuickFix.Fields.ResetSeqNumFlag(true));
                         }
                     }
                 }
@@ -433,12 +434,12 @@ namespace QuickFix
                 }
             }
 
-            public virtual void toApp(QuickFix.Message message, QuickFix.SessionID sessionID)
+            public virtual void ToApp(QuickFix.Message message, QuickFix.SessionID sessionID)
             {
                 try
                 {
-                    QuickFix.MsgType msgType = new QuickFix.MsgType();
-                    string msg = message.getHeader().getField(msgType).getValue();
+                    QuickFix.Fields.MsgType msgType = new QuickFix.Fields.MsgType();
+                    string msg = message.Header.GetField(msgType).getValue();
                     
                     updateDisplay(string.Format("Message Sent: toApp {0}" , msg ));
                 }
@@ -449,17 +450,17 @@ namespace QuickFix
                 }
             }
 
-            public virtual void fromAdmin(QuickFix.Message message, QuickFix.SessionID sessionID)
+            public virtual void FromAdmin(QuickFix.Message message, QuickFix.SessionID sessionID)
             {
-                crack(message, sessionID);
+                Crack(message, sessionID);
             }
 
-            public virtual void fromApp(QuickFix.Message message, QuickFix.SessionID session)
+            public virtual void FromApp(QuickFix.Message message, QuickFix.SessionID session)
             {
                 try
                 {
-                    QuickFix.MsgType msgType = new QuickFix.MsgType();
-                    message.getHeader().getField(msgType);
+                    QuickFix.Fields.MsgType msgType = new QuickFix.Fields.MsgType();
+                    message.Header.GetField(msgType);
                     string msgTypeValue = msgType.getValue();
 
                     updateDisplay(string.Format("fromApp: {0}", msgTypeValue));
@@ -467,21 +468,21 @@ namespace QuickFix
                     switch (msgTypeValue)
                     {
                         case "UAT":
-                            onGatewayStatusMessage((QuickFix42.Message)message, session);
+                            onGatewayStatusMessage((QuickFix.FIX42.Message)message, session);
                             break;
                         case "UAP":
-                            onPositionReportMessage((QuickFix42.Message)message, session);
+                            onPositionReportMessage((QuickFix.FIX42.Message)message, session);
                             break;
 
                         default:
-                            crack(message, session);
+                            Crack(message, session);
                             break;
                     }
                 }
                 catch (QuickFix.UnsupportedMessageType umt)
                 {
                     updateDisplay("UnsupportedMessageType: " + umt.Message);
-                    parseMessage(message, session);
+                    ProcessMessage(message, session);
                 }
                 catch (Exception ex)
                 {
@@ -507,7 +508,7 @@ namespace QuickFix
         /// </summary>
         /// <param name="message"></param>
         /// <param name="session"></param>
-        private void posTableUpdate(QuickFix42.Message message, SessionID session)
+        private void posTableUpdate(QuickFix.FIX42.Message message, SessionID session)
         {
             string MGT = null;
             string acct = null;
@@ -519,87 +520,87 @@ namespace QuickFix
 
             int tradesize = 0;
             char side = char.MinValue;
-            double price = 0.00;
+            decimal price = 0.00M;
 
             bool OK2Update = true;
 
             try
             {
-                QuickFix.SenderSubID subID = new QuickFix.SenderSubID();
-                if (message.getHeader().isSetField(subID))
+                QuickFix.Fields.SenderSubID subID = new QuickFix.Fields.SenderSubID();
+                if (message.Header.IsSetField(subID))
                 {
-                    MGT = message.getHeader().getField(subID).getValue();
+                    MGT = message.Header.GetField(subID).getValue();
                 }
                 else
                 { OK2Update = false; }
 
-                QuickFix.Account a = new QuickFix.Account();
-                if (message.isSetField(a))
+                QuickFix.Fields.Account a = new QuickFix.Fields.Account();
+                if (message.IsSetField(a))
                 {
-                    acct = message.getField(a).getValue();
+                    acct = message.GetField(a).getValue();
                 }
                 else
                 { OK2Update = false; }
 
-                QuickFix.SecurityExchange se = new QuickFix.SecurityExchange();
-                if (message.isSetField(se))
+                QuickFix.Fields.SecurityExchange se = new QuickFix.Fields.SecurityExchange();
+                if (message.IsSetField(se))
                 {
-                    SecEx = message.getField(se).getValue();
+                    SecEx = message.GetField(se).getValue();
                 }
                 else
                 { OK2Update = false; }
 
-                QuickFix.Symbol s = new QuickFix.Symbol();
-                if (message.isSetField(s))
+                QuickFix.Fields.Symbol s = new QuickFix.Fields.Symbol();
+                if (message.IsSetField(s))
                 {
-                    symbol = message.getField(s).getValue();
+                    symbol = message.GetField(s).getValue();
                 }
                 else
                 { OK2Update = false; }
 
-                QuickFix.SecurityID sid = new QuickFix.SecurityID();
-                if (message.isSetField(sid))
+                QuickFix.Fields.SecurityID sid = new QuickFix.Fields.SecurityID();
+                if (message.IsSetField(sid))
                 {
-                    secID = message.getField(sid).getValue();
+                    secID = message.GetField(sid).getValue();
                 }
                 else
                 { OK2Update = false; }
 
                 TT.ExchangeGateway eg = new TT.ExchangeGateway();
-                if (message.isSetField(eg))
+                if (message.IsSetField(eg))
                 {
-                    gateway = message.getField(eg).getValue();
+                    gateway = message.GetField(eg).getValue();
                 }
                 else
                 { OK2Update = false; }
 
 
-                QuickFix.LastShares q = new QuickFix.LastShares();
-                if (message.isSetField(q))
+                QuickFix.Fields.LastShares q = new QuickFix.Fields.LastShares();
+                if (message.IsSetField(q))
                 {
-                    tradesize = (int)message.getField(q).getValue();
+                    tradesize = (int)message.GetField(q).getValue();
                 }
 
-                QuickFix.Side bs = new QuickFix.Side();
-                if (message.isSetField(bs))
+                QuickFix.Fields.Side bs = new QuickFix.Fields.Side();
+                if (message.IsSetField(bs))
                 {
-                    side = message.getField(bs).getValue();
+                    side = message.GetField(bs).getValue();
                 }
                 else
                 {
                     if (tradesize < 0)
                     {
                         tradesize = Math.Abs(tradesize);
-                        side = QuickFix.Side.SELL;
+                        side = QuickFix.Fields.Side.SELL;
                     }
                     else
-                    { side = QuickFix.Side.BUY; }
+                    { side = QuickFix.Fields.Side.BUY; }
                 }
 
-                QuickFix.LastPx fill = new QuickFix.LastPx();
-                if (message.isSetField(fill))
+                QuickFix.Fields.LastPx fill = new QuickFix.Fields.LastPx();
+                if (message.IsSetField(fill))
                 {
-                    price = message.getField(fill).getValue();
+                    price = message.GetField(fill).getValue();
                 }
 
                 if (OK2Update)
@@ -610,7 +611,7 @@ namespace QuickFix
                 else
                 {
                     updateDisplay("Position not updated by following message");
-                    parseMessage(message, session);
+                    ProcessMessage(message, session);
                 }
             }
             catch (Exception ex)
@@ -641,63 +642,63 @@ namespace QuickFix
         }
 
         //not implemented
-        public override void onMessage(QuickFix42.BusinessMessageReject message, QuickFix.SessionID session)
+        public void OnMessage(QuickFix.FIX42.BusinessMessageReject message, QuickFix.SessionID session)
         {
-            parseMessage(message, session);
+            ProcessMessage(message, session);
         }
 
         //not implemented
-        public override void onMessage(QuickFix42.MarketDataRequestReject message, SessionID session)
+        public void OnMessage(QuickFix.FIX42.MarketDataRequestReject message, SessionID session)
         {
-            parseMessage(message, session);
-
-        }
-
-        //not implemented
-        public override void onMessage(QuickFix42.MarketDataIncrementalRefresh message, SessionID session)
-        {
-            parseMessage(message, session);
-        }
-
-        //not implemented
-        public override void onMessage(QuickFix42.OrderCancelReject message, SessionID session)
-        {
-            parseMessage(message, session);
+            ProcessMessage(message, session);
 
         }
 
         //not implemented
-        public override void onMessage(QuickFix42.SecurityStatus message, QuickFix.SessionID session)
+        public void OnMessage(QuickFix.FIX42.MarketDataIncrementalRefresh message, SessionID session)
         {
-            parseMessage(message, session);
+            ProcessMessage(message, session);
+        }
+
+        //not implemented
+        public void OnMessage(QuickFix.FIX42.OrderCancelReject message, SessionID session)
+        {
+            ProcessMessage(message, session);
+
+        }
+
+        //not implemented
+        public void OnMessage(QuickFix.FIX42.SecurityStatus message, QuickFix.SessionID session)
+        {
+            ProcessMessage(message, session);
         }
 
         //receive fills, working orders, order rejects
-        public override void onMessage(QuickFix42.ExecutionReport message, QuickFix.SessionID session)
+        public void OnMessage(QuickFix.FIX42.ExecutionReport message, QuickFix.SessionID session)
         {
             //parseMessage(message, session);
             try
             {
-                QuickFix.ExecType et = new QuickFix.ExecType();
-                QuickFix.ExecTransType ett = new QuickFix.ExecTransType();
-                QuickFix.ClOrdID coid = new ClOrdID();
+                QuickFix.Fields.ExecType et = new QuickFix.Fields.ExecType();
+                QuickFix.Fields.ExecTransType ett = new QuickFix.Fields.ExecTransType();
+                QuickFix.Fields.ClOrdID coid = new QuickFix.Fields.ClOrdID();
 
                 //Friday, December 11, 2009 10:29:27 AM Added parentheses to encapsulate OR
                 //remove hold on orders if order was rejected
-                if (message.isSetField(coid) && 
-                    (message.getField(et).getValue() == QuickFix.ExecType.FILL ||
-                    message.getField(et).getValue() == QuickFix.ExecType.REJECTED))
+                if (message.IsSetField(coid) && 
+                    (message.GetField(et).getValue() == QuickFix.Fields.ExecType.FILL ||
+                    message.GetField(et).getValue() == QuickFix.Fields.ExecType.REJECTED))
                 {
-                    updateOrderMgmt(message.getField(coid).getValue().ToString());
+                    updateOrderMgmt(message.GetField(coid).getValue().ToString());
                 }
                 //end modified code
 
-                if (message.isSetField(et))
+                if (message.IsSetField(et))
                 {
                     //capture fill to update position
-                    if ((message.getField(et).getValue() == QuickFix.ExecType.FILL ||
-                         message.getField(et).getValue() == QuickFix.ExecType.PARTIAL_FILL) &&
-                         message.getMultiLegReportingType().getValue() != QuickFix.MultiLegReportingType.MULTI_LEG_SECURITY)
+                    if ((message.GetField(et).getValue() == QuickFix.Fields.ExecType.FILL ||
+                         message.GetField(et).getValue() == QuickFix.Fields.ExecType.PARTIAL_FILL) &&
+                         message.MultiLegReportingType.getValue() != QuickFix.Fields.MultiLegReportingType.MULTI_LEG_SECURITY)
                     {
                         updateDisplay("execution received");
                         posTableUpdate(message, session);
@@ -705,16 +706,16 @@ namespace QuickFix
                     }
 
                     //capture working orders and cancel for flatten
-                    if (message.getField(et).getValue() == QuickFix.ExecType.RESTATED &&
-                        message.getField(ett).getValue() == QuickFix.ExecTransType.STATUS)
+                    if (message.GetField(et).getValue() == QuickFix.Fields.ExecType.RESTATED &&
+                        message.GetField(ett).getValue() == QuickFix.Fields.ExecTransType.STATUS)
                     {
 
                         string MGT = null;
-                        QuickFix.SenderSubID subID = new QuickFix.SenderSubID();
-                        if (message.getHeader().isSetField(subID))
+                        QuickFix.Fields.SenderSubID subID = new QuickFix.Fields.SenderSubID();
+                        if (message.Header.IsSetField(subID))
                         {
-                            MGT = message.getHeader().getField(subID).ToString();
-                            orderCancel(MGT, message.getOrderID().ToString());
+                            MGT = message.Header.GetField(subID).ToString();
+                            orderCancel(MGT, message.OrderID.ToString());
                         }
                     }
                 }
@@ -728,60 +729,60 @@ namespace QuickFix
         }
 
         //Receive market data
-        public override void onMessage(QuickFix42.MarketDataSnapshotFullRefresh message, SessionID session)
+        public void OnMessage(QuickFix.FIX42.MarketDataSnapshotFullRefresh message, SessionID session)
         {
-            //parseMessage(message, session);
-            double _bidPrice = 0.00;
-            double _askPrice = 0.00;
+            decimal _bidPrice = 0.00M;
+            decimal _askPrice = 0.00M;
 
             try
             {
-                if (message.hasGroup(new QuickFix42.MarketDataSnapshotFullRefresh.NoMDEntries()))
+                QuickFix.Group noMDEntriesGrp = new QuickFix.FIX42.MarketDataSnapshotFullRefresh.NoMDEntriesGroup();
+
+
+                for (int grpIndex = 1; grpIndex <= message.GetInt(QuickFix.Fields.Tags.NoMDEntries); grpIndex += 1)
                 {
-                    QuickFix42.MarketDataSnapshotFullRefresh.NoMDEntries g = new QuickFix42.MarketDataSnapshotFullRefresh.NoMDEntries();
-                    QuickFix.NoMDEntries nEntries = new QuickFix.NoMDEntries();
-                    message.getField(nEntries);
+                    noMDEntriesGrp = message.GetGroup(grpIndex, QuickFix.Fields.Tags.NoMDEntries);
 
-                    for (uint i = 1; i <= message.groupCount(QuickFix.NoMDEntries.FIELD); i++)
+                    if (noMDEntriesGrp.IsSetField(QuickFix.Fields.Tags.BidPx))
                     {
-                        message.getGroup(i, g);
-
-                        if (g.get(new QuickFix.MDEntryType()).getValue() == QuickFix.MDEntryType.BID)
-                        { _bidPrice = g.get(new QuickFix.MDEntryPx()).getValue(); }
-
-                        if (g.get(new QuickFix.MDEntryType()).getValue() == QuickFix.MDEntryType.OFFER)
-                        { _askPrice = g.get(new QuickFix.MDEntryPx()).getValue(); }
+                        _bidPrice = QuickFix.Fields.Converters.DecimalConverter.Convert(noMDEntriesGrp.GetField(QuickFix.Fields.Tags.BidPx));
                     }
+
+                    if (noMDEntriesGrp.IsSetField(QuickFix.Fields.Tags.OfferPx))
+                    {
+                        _askPrice = QuickFix.Fields.Converters.DecimalConverter.Convert(noMDEntriesGrp.GetField(QuickFix.Fields.Tags.OfferPx));
+                    }
+
                 }
 
                 string SecEx = null;
                 string symbol = null;
                 string secID = null;
 
-                QuickFix.SecurityExchange se = new QuickFix.SecurityExchange();
-                if (message.isSetField(se))
-                { SecEx = message.getField(se).ToString(); }
+                QuickFix.Fields.SecurityExchange se = new QuickFix.Fields.SecurityExchange();
+                if (message.IsSetField(se))
+                { SecEx = message.GetField(se).ToString(); }
 
-                QuickFix.Symbol s = new QuickFix.Symbol();
-                if (message.isSetField(s))
-                { symbol = message.getField(s).ToString(); }
+                QuickFix.Fields.Symbol s = new QuickFix.Fields.Symbol();
+                if (message.IsSetField(s))
+                { symbol = message.GetField(s).ToString(); }
 
-                QuickFix.SecurityID sid = new QuickFix.SecurityID();
-                if (message.isSetField(sid))
-                { secID = message.getField(sid).ToString(); }
+                QuickFix.Fields.SecurityID sid = new QuickFix.Fields.SecurityID();
+                if (message.IsSetField(sid))
+                { secID = message.GetField(sid).ToString(); }
 
                 updatePrices(SecEx, symbol, secID, _bidPrice, _askPrice);
             }
             catch (Exception ex)
             { 
-                updateDisplay("QuickFIX Error");
-                log.WriteLog(ex.ToString());
+                updateDisplay(string.Format("QuickFIX Error: {0}", System.Reflection.MethodBase.GetCurrentMethod().Name));
+                log.WriteLog(string.Format("{0} : {1}", System.Reflection.MethodBase.GetCurrentMethod().Name, ex.ToString()));
             }
 
         }
 
         //receive contract parameters
-        public override void onMessage(QuickFix42.SecurityDefinition message, QuickFix.SessionID session)
+        public void OnMessage(QuickFix.FIX42.SecurityDefinition message, QuickFix.SessionID session)
         {
             //parseMessage(message, session);
 
@@ -791,28 +792,28 @@ namespace QuickFix
 
             try
             {
-                QuickFix.SecurityExchange se = new QuickFix.SecurityExchange();
-                if (message.isSetField(se))
-                { SecEx = message.getField(se).ToString(); }
+                QuickFix.Fields.SecurityExchange se = new QuickFix.Fields.SecurityExchange();
+                if (message.IsSetField(se))
+                { SecEx = message.GetField(se).ToString(); }
 
-                QuickFix.Symbol s = new QuickFix.Symbol();
-                if (message.isSetField(s))
-                { symbol = message.getField(s).ToString(); }
+                QuickFix.Fields.Symbol s = new QuickFix.Fields.Symbol();
+                if (message.IsSetField(s))
+                { symbol = message.GetField(s).ToString(); }
 
-                QuickFix.SecurityID sid = new QuickFix.SecurityID();
-                if (message.isSetField(sid))
-                { secID = message.getField(sid).ToString(); }
+                QuickFix.Fields.SecurityID sid = new QuickFix.Fields.SecurityID();
+                if (message.IsSetField(sid))
+                { secID = message.GetField(sid).ToString(); }
 
                 string cur = null;
-                double exPtVal = 0.00;
+                decimal exPtVal = 0.00M;
 
                 TT.ExchPointValue epv = new TT.ExchPointValue();
-                if (message.isSetField(epv))
-                { exPtVal = message.getField(epv).getValue(); }
+                if (message.IsSetField(epv))
+                { exPtVal = message.GetField(epv).getValue(); }
 
-                QuickFix.Currency ccy = new QuickFix.Currency();
-                if (message.isSetField(ccy))
-                { cur = message.getField(ccy).getValue(); }
+                QuickFix.Fields.Currency ccy = new QuickFix.Fields.Currency();
+                if (message.IsSetField(ccy))
+                { cur = message.GetField(ccy).getValue(); }
 
                 updateSecurity(SecEx, symbol, secID, cur, exPtVal);
             }
@@ -825,26 +826,26 @@ namespace QuickFix
         }
 
         //receive responses from position request messages
-        public void onPositionReportMessage(QuickFix42.Message message, SessionID session)
+        public void onPositionReportMessage(QuickFix.FIX42.Message message, SessionID session)
         {
 
             TT.PosReqId req = new TT.PosReqId(); 
-            string r = message.getField(req).getValue(); //SOD, DSOD, MANUAL_FILL, TRADES
+            string r = message.GetField(req).getValue(); //SOD, DSOD, MANUAL_FILL, TRADES
             log.WriteLog(r);
 
             TT.TotalNumPosReports num = new TT.TotalNumPosReports();
-            int numReports = message.getField(num).getValue() ;
+            int numReports = message.GetField(num).getValue() ;
             log.WriteLog(numReports.ToString());
 
             TT.PosMaintRptId uniqueID = new TT.PosMaintRptId();
 
-            if (posReports.Contains(message.getField(uniqueID).getValue()))
+            if (posReports.Contains(message.GetField(uniqueID).getValue()))
             { updateDisplay("Duplicate position report recieved and discarded: " + uniqueID.ToString()); }
             else
             {
-                posReports.Add(message.getField(uniqueID).getValue());
+                posReports.Add(message.GetField(uniqueID).getValue());
 
-                if (message.isSetField(num) && numReports != 0)
+                if (message.IsSetField(num) && numReports != 0)
                 {
                     updateDisplay(string.Format("{0} updates in this {1} report",num, r));
                     posTableUpdate(message, session);
@@ -892,26 +893,26 @@ namespace QuickFix
         }
 
         //receive gateway status messages
-        public void onGatewayStatusMessage(QuickFix42.Message message, SessionID session)
+        public void onGatewayStatusMessage(QuickFix.FIX42.Message message, SessionID session)
         {
 
-            if (message.hasGroup(TT.NoGatewayStatus.FIELD))
+            if (message.IsSetField(TT.NoGatewayStatus.FIELD))
             {
                 //updateDisplay(string.Format("Found {0} NoGatewayStatus groups", message.groupCount(TT.NoGatewayStatus.FIELD)));
                 QuickFix.Group g = new Group(18201, 18202, new int[] { 18202, 207, 18203, 18204, 58, 0 });
 
-                for (uint i = 1; i <= message.groupCount(TT.NoGatewayStatus.FIELD); i++)
+                for (int i = 1; i <= message.GroupCount(TT.NoGatewayStatus.FIELD); i++)
                 {
-                    message.getGroup(i, g);
-                    string exch = g.getField(new TT.ExchangeGateway()).getValue();
-                    int server = g.getField(new TT.SubExchangeGateway()).getValue();
-                    int status = g.getField(new TT.GatewayStatus()).getValue();
+                    message.GetGroup(i, g);
+                    string exch = g.GetField(new TT.ExchangeGateway()).getValue();
+                    int server = g.GetField(new TT.SubExchangeGateway()).getValue();
+                    int status = g.GetField(new TT.GatewayStatus()).getValue();
                     string text = null;
                     //updateDisplay(string.Format("ExchangeGateway:{0}, SubExchangeGateway:{1},GatewayStatus:{0}", exch, server, status));
 
-                    if (g.isSetField(new QuickFix.Text()))
+                    if (g.IsSetField(new QuickFix.Fields.Text()))
                     { 
-                        text = g.getField(new QuickFix.Text()).ToString();
+                        text = g.GetField(new QuickFix.Fields.Text()).ToString();
                         updateDisplay(string.Format("Text: {0}", text)); 
                     }
 
@@ -927,31 +928,31 @@ namespace QuickFix
        
         #region Session Level Messages - NOT IMPLEMENETED
        
-        public override void onMessage(QuickFix42.Heartbeat message, SessionID session)
+        public  void OnMessage(QuickFix.FIX42.Heartbeat message, SessionID session)
         {
-            parseMessage(message, session);
+            ProcessMessage(message, session);
         }
 
-        public override void onMessage(QuickFix42.TestRequest  message, SessionID session)
+        public  void OnMessage(QuickFix.FIX42.TestRequest  message, SessionID session)
         {
            
-            parseMessage(message, session);
+            ProcessMessage(message, session);
         }
 
-        public override void onMessage(QuickFix42.ResendRequest message, SessionID session)
+        public  void OnMessage(QuickFix.FIX42.ResendRequest message, SessionID session)
         {
-            parseMessage(message, session);
+            ProcessMessage(message, session);
         }
 
-        public override void onMessage(QuickFix42.Reject message, SessionID session)
+        public  void OnMessage(QuickFix.FIX42.Reject message, SessionID session)
         {
-            parseMessage(message, session);
+            ProcessMessage(message, session);
         }
 
-        public override void onMessage(QuickFix42.SequenceReset message, SessionID session)
+        public  void OnMessage(QuickFix.FIX42.SequenceReset message, SessionID session)
         {
-            //base.onMessage(message, session); runs overidden functionality 
-            parseMessage(message, session);
+            //base.OnMessage(message, session); runs overidden functionality 
+            ProcessMessage(message, session);
         }
         
         #endregion

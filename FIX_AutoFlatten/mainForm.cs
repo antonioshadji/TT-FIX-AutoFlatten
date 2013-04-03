@@ -47,7 +47,7 @@ namespace FIX_AutoFlatten
         //email variables setup
         private DataTable tblParameters = null;
         private bool isEmailEnabled = false;
-        private Double[] EmailLimits;
+        private Decimal[] EmailLimits;
         private String[] to;
         private String[] cc;
         private String[] bcc;
@@ -177,10 +177,10 @@ namespace FIX_AutoFlatten
                         {
                             this.dateTimePicker2.Value = DateTime.Today + ts;
                             TimeChanged = false;
-                            log.WriteList("Reset Time set to: " + this.dateTimePicker2.Value.ToShortTimeString());
+                            log.WriteList("Reset Time Set to: " + this.dateTimePicker2.Value.ToShortTimeString());
                         }
                         else
-                        { log.WriteList("Reset Time not set!"); }
+                        { log.WriteList("Reset Time not Set!"); }
 
 
                         if (setINI.Tables["settings"].Columns.Contains("baseCurrency"))
@@ -191,10 +191,10 @@ namespace FIX_AutoFlatten
                         {
                             baseCurrency = "USD";
                         }
-                        log.WriteList("Base Currency set to " + baseCurrency);
+                        log.WriteList("Base Currency Set to " + baseCurrency);
 
                         bool filter = Boolean.TryParse(setINI.Tables["settings"].Rows[0]["AccountFilter"].ToString(), out isAccountFilterEnabled);
-                        log.WriteList("Account Filtering set to "+isAccountFilterEnabled.ToString());
+                        log.WriteList("Account Filtering Set to "+isAccountFilterEnabled.ToString());
 
                         bool testing = Boolean.TryParse(setINI.Tables["settings"].Rows[0]["DEBUG"].ToString(), out isDebug);
                         log.WriteList("DEBUG MODE: " + isDebug.ToString());
@@ -256,7 +256,7 @@ namespace FIX_AutoFlatten
                     }
 
                     DataTable tblAddress = null;
-                    //set up email address table 
+                    //Set up email address table 
                     if (setINI.Tables.Contains("address"))
                     {
                         tblAddress = setINI.Tables["address"];
@@ -265,7 +265,7 @@ namespace FIX_AutoFlatten
                         to = new String[tblAddress.Rows.Count];
                         cc = new String[tblAddress.Rows.Count];
                         bcc = new String[tblAddress.Rows.Count];
-                        EmailLimits = new Double[tblAddress.Rows.Count];
+                        EmailLimits = new Decimal[tblAddress.Rows.Count];
                         subject = new String[tblAddress.Rows.Count];
                         msg = new String[tblAddress.Rows.Count];
                         priority = new MailPriority[tblAddress.Rows.Count];
@@ -277,7 +277,7 @@ namespace FIX_AutoFlatten
                             bcc.SetValue(row[tblAddress.Columns["bcc"]].ToString(), ctr);
 
                             EmailLimits[ctr] = Math.Abs(
-                                Convert.ToDouble(
+                                Convert.ToDecimal(
                                 row[tblAddress.Columns["limit"]])) * -1;
 
                             subject.SetValue(row[tblAddress.Columns["subject"]].ToString(), ctr);
@@ -323,7 +323,7 @@ namespace FIX_AutoFlatten
         /// </summary>
         /// <param name="serverAddress"></param>
         /// <returns></returns>
-        //Ping test code must be set up to run on separate thread to prevent application from hanging
+        //Ping test code must be Set up to run on separate thread to prevent application from hanging
         //private bool _PingTest(string serverAddress)
         //{
         //    try
@@ -364,13 +364,13 @@ namespace FIX_AutoFlatten
         /// <param name="secID"></param>
         /// <param name="bid"></param>
         /// <param name="ask"></param>
-        private void CalcPnL(string SecEx, string product, string secID, double bid, double ask)
+        private void CalcPnL(string SecEx, string product, string secID, decimal  bid, decimal  ask)
         {
             current = DateTime.Now;
             //log.WriteList("CalcPnL");
             try{
 
-                SortedDictionary<string, double> totalPnL = new SortedDictionary<string, double>();
+                SortedDictionary<string, decimal > totalPnL = new SortedDictionary<string, decimal >();
 
                 foreach (DataRow dr in dsRisk.tblPositions)
                 {
@@ -393,23 +393,24 @@ namespace FIX_AutoFlatten
                         int matchQty = Math.Min(buypos, sellpos);
                         int remainQty = buypos - sellpos;
 
-                        double avgbuy = 0.00;
-                        if ((double)dr[dsRisk.tblPositions.AvgBuyColumn] != double.NaN && dr[dsRisk.tblPositions.AvgBuyColumn] !=null)
-                            avgbuy = (double)dr[dsRisk.tblPositions.AvgBuyColumn];
+                        decimal  avgbuy = 0.00M;
+                        //TODO verify that this works 
+                        if ( ((decimal)dr[dsRisk.tblPositions.AvgBuyColumn]).GetType().IsValueType )
+                            avgbuy = (decimal )dr[dsRisk.tblPositions.AvgBuyColumn];
 
-                        double avgsell = 0.00;
-                        if ((double)dr[dsRisk.tblPositions.AvgSellColumn] != double.NaN && dr[dsRisk.tblPositions.AvgSellColumn] != null)
-                            avgsell = (double)dr[dsRisk.tblPositions.AvgSellColumn];
+                        decimal  avgsell = 0.00M;
+                        if ( dr[dsRisk.tblPositions.AvgSellColumn] != null)
+                            avgsell = (decimal )dr[dsRisk.tblPositions.AvgSellColumn];
 
-                        double prcdiff = avgsell- avgbuy;
+                        decimal  prcdiff = avgsell- avgbuy;
                         
-                        double exPtVal = (double)securityInfo[dsRisk.tblSecurity.ExchangePointValueColumn];
+                        decimal  exPtVal = (decimal )securityInfo[dsRisk.tblSecurity.ExchangePointValueColumn];
                         string contractCurrency = securityInfo[dsRisk.tblSecurity.CurrencyColumn].ToString();
 
-                        double currencyConversionrate = 1.00;
+                        decimal  currencyConversionrate = 1.00M;
                         if (conversion[contractCurrency] != null)
                         {
-                            currencyConversionrate = (double)conversion[contractCurrency];
+                            currencyConversionrate = (decimal )conversion[contractCurrency];
                         }
 
                         if (matchQty != 0)
@@ -436,13 +437,13 @@ namespace FIX_AutoFlatten
                     }
 
                     if (totalPnL.ContainsKey(dr[0].ToString()))
-                    { totalPnL[dr[0].ToString()] += ((double)dr[dsRisk.tblPositions.RealizedPLColumn] + (double)dr[dsRisk.tblPositions.UnrealizedPLColumn]); }
+                    { totalPnL[dr[0].ToString()] += ((decimal )dr[dsRisk.tblPositions.RealizedPLColumn] + (decimal )dr[dsRisk.tblPositions.UnrealizedPLColumn]); }
                     else
-                    { totalPnL[dr[0].ToString()] = ((double)dr[dsRisk.tblPositions.RealizedPLColumn] + (double)dr[dsRisk.tblPositions.UnrealizedPLColumn]); }
+                    { totalPnL[dr[0].ToString()] = ((decimal )dr[dsRisk.tblPositions.RealizedPLColumn] + (decimal )dr[dsRisk.tblPositions.UnrealizedPLColumn]); }
 
                 }
 
-                foreach (KeyValuePair<string,double>  kvp in totalPnL)
+                foreach (KeyValuePair<string,decimal >  kvp in totalPnL)
                 {
                     DataRow dr = dsRisk.tblTrader.Rows.Find(kvp.Key);
 
@@ -478,10 +479,10 @@ namespace FIX_AutoFlatten
                 {
                     //log.WriteList(string.Format("{0} < {1}", dr[dsRisk.tblTrader.TotalPLColumn], dr[dsRisk.tblTrader.LimitColumn]));
 
-                    double total;
-                    bool isValid = double.TryParse(dr[dsRisk.tblTrader.TotalPLColumn].ToString(), out total);
+                    decimal  total;
+                    bool isValid = decimal .TryParse(dr[dsRisk.tblTrader.TotalPLColumn].ToString(), out total);
 
-                    if (isValid && (double)dr[dsRisk.tblTrader.TotalPLColumn] <= (double)dr[dsRisk.tblTrader.LimitColumn])
+                    if (isValid && (decimal )dr[dsRisk.tblTrader.TotalPLColumn] <= (decimal )dr[dsRisk.tblTrader.LimitColumn])
                     {
                         string MGT = dr[dsRisk.tblTrader.MGTColumn].ToString();
                         stoppedTraders.Add(MGT);
@@ -503,7 +504,7 @@ namespace FIX_AutoFlatten
 
                         if (isValid &&
                             ActiveAlert <= EmailLimits.GetUpperBound(0) &&
-                            (double)dr[dsRisk.tblTrader.TotalPLColumn] < EmailLimits[ActiveAlert])
+                            (decimal )dr[dsRisk.tblTrader.TotalPLColumn] < EmailLimits[ActiveAlert])
                         {
 
                             SendEmail(
@@ -548,10 +549,10 @@ namespace FIX_AutoFlatten
                         char bs = char.MinValue;
 
                         if (buys < sells)
-                        { bs = QuickFix.Side.BUY; }
+                        { bs = QuickFix.Fields.Side.BUY; }
                         else
-                        { bs = QuickFix.Side.SELL; }
-                        double qty = Convert.ToDouble(Math.Abs(buys - sells));
+                        { bs = QuickFix.Fields.Side.SELL; }
+                        decimal qty = Convert.ToDecimal(Math.Abs(buys - sells));
 
                         string SecEx = dr[dsRisk.tblPositions.SecurityExchangeColumn].ToString();
                         string symbol = dr[dsRisk.tblPositions.SymbolColumn].ToString();
@@ -592,15 +593,15 @@ namespace FIX_AutoFlatten
         /// <param name="secID"></param>
         /// <param name="bid"></param>
         /// <param name="ask"></param>
-        private void UpdatePrices(string SecEx, string product, string secID, double bid, double ask)
+        private void UpdatePrices(string SecEx, string product, string secID, decimal  bid, decimal  ask)
         {
             try
             {
                 DataRow dr = dsRisk.tblSecurity.Rows.Find(new object[] { SecEx, product, secID });
                 if (dr != null)
                 {
-                    if (bid != (double)dr[dsRisk.tblSecurity.BidPriceColumn] ||
-                        ask != (double)dr[dsRisk.tblSecurity.AskPriceColumn])
+                    if (bid != (decimal )dr[dsRisk.tblSecurity.BidPriceColumn] ||
+                        ask != (decimal )dr[dsRisk.tblSecurity.AskPriceColumn])
                     {
                         dr[dsRisk.tblSecurity.BidPriceColumn] = bid;
                         dr[dsRisk.tblSecurity.AskPriceColumn] = ask;
@@ -669,7 +670,7 @@ namespace FIX_AutoFlatten
         /// <param name="secID"></param>
         /// <param name="CUR"></param>
         /// <param name="exPointValue"></param>
-        private void UpdateSecurity(string SecEx, string product, string secID, string CUR, double exPointValue)
+        private void UpdateSecurity(string SecEx, string product, string secID, string CUR, decimal exPointValue)
         {
 
             try
@@ -678,7 +679,7 @@ namespace FIX_AutoFlatten
                 {
 
                     dsRisk.tblSecurity.AddtblSecurityRow(SecEx, product, secID,
-                    CUR, exPointValue, 0.00, 0.00);
+                    CUR, exPointValue, 0.00M, 0.00M);
 
                 }
                 else
@@ -686,7 +687,8 @@ namespace FIX_AutoFlatten
                     DataRow dr = dsRisk.tblSecurity.Rows.Find(new object[] { SecEx, product, secID });
 
                     if (CUR != null) { dr[dsRisk.tblSecurity.CurrencyColumn] = CUR; }
-                    if (exPointValue != double.NaN) { dr[dsRisk.tblSecurity.ExchangePointValueColumn] = exPointValue; }
+                    //if (exPointValue != decimal .NaN) { 
+                    dr[dsRisk.tblSecurity.ExchangePointValueColumn] = exPointValue; 
 
                     //save changes
                     dr.AcceptChanges();
@@ -716,7 +718,7 @@ namespace FIX_AutoFlatten
             string secID, 
             int tradesize, 
             char side,
-            double price,
+            decimal  price,
             string gateway)
         {
             log.WriteLog("mainForm::UpdatePosition");
@@ -735,18 +737,18 @@ namespace FIX_AutoFlatten
             
             int currentBuyPos = 0;
             int currentSellPos = 0;
-            double currentBuyPrc = 0.00;
-            double currentSellPrc = 0.00;
+            decimal  currentBuyPrc = 0.00M;
+            decimal  currentSellPrc = 0.00M;
             int previousBuyPos = 0;
             int previousSellPos = 0;
 
 
-            if (side == QuickFix.Side.SELL )
+            if (side == QuickFix.Fields.Side.SELL )
             {
                 currentSellPos = tradesize;
                 currentSellPrc = price;
             }
-            else if (side == QuickFix.Side.BUY)
+            else if (side == QuickFix.Fields.Side.BUY)
             {
                 currentBuyPos = tradesize;
                 currentBuyPrc = price;
@@ -762,9 +764,9 @@ namespace FIX_AutoFlatten
                 if (dsRisk.tblPositions.Rows.Find(new object[] { MGT, SecEx, product, secID }) == null)
                 {
 
-
+                    //TODO why cast to double??
                     dsRisk.tblPositions.AddtblPositionsRow(MGT, SecEx, product, secID,
-                    currentBuyPos, currentSellPos, currentBuyPrc, currentSellPrc, 0.00, 0.00, gateway, acct );
+                    currentBuyPos, currentSellPos, (double)currentBuyPrc, (double)currentSellPrc, 0.00, 0.00, gateway, acct );
 
                     TT.SendMsg send = new TT.SendMsg();
 
@@ -786,14 +788,14 @@ namespace FIX_AutoFlatten
                     dr[dsRisk.tblPositions.SellPosColumn] = previousSellPos + currentSellPos;
 
 
-                    double previousAvgBuyPrc = 0.00;
-                    if ((double)dr[dsRisk.tblPositions.AvgBuyColumn] != double.NaN && dr[dsRisk.tblPositions.AvgBuyColumn] != null)
-                        previousAvgBuyPrc = (double)dr[dsRisk.tblPositions.AvgBuyColumn];
+                    decimal  previousAvgBuyPrc = 0.00M;
+                    if ( dr[dsRisk.tblPositions.AvgBuyColumn] != null)
+                        previousAvgBuyPrc = (decimal )dr[dsRisk.tblPositions.AvgBuyColumn];
 
 
-                    double previousAvgSellPrc = 0.00;
-                    if ((double)dr[dsRisk.tblPositions.AvgSellColumn] != double.NaN && dr[dsRisk.tblPositions.AvgSellColumn] != null)
-                        previousAvgSellPrc = (double)dr[dsRisk.tblPositions.AvgSellColumn];
+                    decimal  previousAvgSellPrc = 0.00M;
+                    if ( dr[dsRisk.tblPositions.AvgSellColumn] != null)
+                        previousAvgSellPrc = (decimal )dr[dsRisk.tblPositions.AvgSellColumn];
 
 
                     dr[dsRisk.tblPositions.AvgBuyColumn] = ((previousBuyPos * previousAvgBuyPrc) +
@@ -803,8 +805,9 @@ namespace FIX_AutoFlatten
                     dr[dsRisk.tblPositions.AvgSellColumn] = ((previousSellPos * previousAvgSellPrc) +
                                                              (currentSellPos * currentSellPrc)) / (previousSellPos + currentSellPos);
 
-                    if (dr[dsRisk.tblPositions.AvgBuyColumn].Equals(double.NaN)) { dr[dsRisk.tblPositions.AvgBuyColumn] = 0.00; }
-                    if (dr[dsRisk.tblPositions.AvgSellColumn].Equals(double.NaN)) { dr[dsRisk.tblPositions.AvgSellColumn] = 0.00; }
+                    // using decimals negates the need to check for NaN? 
+                    // if (dr[dsRisk.tblPositions.AvgBuyColumn].Equals(decimal. .NaN)) { dr[dsRisk.tblPositions.AvgBuyColumn] = 0.00; }
+                    // if (dr[dsRisk.tblPositions.AvgSellColumn].Equals(decimal .NaN)) { dr[dsRisk.tblPositions.AvgSellColumn] = 0.00; }
 
                     dr.AcceptChanges();
 
@@ -814,8 +817,8 @@ namespace FIX_AutoFlatten
                 DataRow drPrc = dsRisk.tblSecurity.Rows.Find(new object[] { SecEx, product, secID });
                 if (drPrc != null)
                 {
-                    double bid = (double)drPrc[dsRisk.tblSecurity.BidPriceColumn];
-                    double ask = (double)drPrc[dsRisk.tblSecurity.AskPriceColumn];
+                    decimal  bid = (decimal )drPrc[dsRisk.tblSecurity.BidPriceColumn];
+                    decimal  ask = (decimal )drPrc[dsRisk.tblSecurity.AskPriceColumn];
 
                     CalcPnL(SecEx, product, secID, bid, ask);
                 }
@@ -913,7 +916,7 @@ namespace FIX_AutoFlatten
         /// <summary>
         /// This event starts off ticking every second when application starts and at the end of first minute
         /// slows to checking time once per minute.
-        /// If current time = the time set on the application for reset; all p&L and positions are cleared off 
+        /// If current time = the time Set on the application for reset; all p&L and positions are cleared off 
         /// and email alerts are reset to start at first alert.
         /// </summary>
         /// <param name="sender"></param>

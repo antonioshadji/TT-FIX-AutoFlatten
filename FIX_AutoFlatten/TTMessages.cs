@@ -45,13 +45,13 @@ namespace TT
         {
             try
             {
-                //Gateway Status Request
-                QuickFix42.Message gsr = new QuickFix42.Message(new QuickFix.MsgType("UAR"));
-                gsr.setChar(QuickFix.SubscriptionRequestType.FIELD, SubscriptionRequestType);
+                //Gateway Status Request:: new QuickFix.Fields.MsgType("UAR")
+                QuickFix.FIX42.GatewayStatusRequest gsr = new QuickFix.FIX42.GatewayStatusRequest();
+                gsr.SubscriptionRequestType.setValue(SubscriptionRequestType);
 
-                gsr.setField(new TT.GatewayStatusReqId(uniqueID()));
+                gsr.SetField(new TT.GatewayStatusReqId(uniqueID()));
 
-                QuickFix.Session.sendToTarget(gsr, orderSessionID);
+                QuickFix.Session.SendToTarget(gsr, orderSessionID);
             }
             catch (Exception ex)
             { log.WriteLog(ex.ToString()); }
@@ -66,29 +66,29 @@ namespace TT
         {
             try
             {
-                //Request for Position
-                QuickFix42.Message rfp = new QuickFix42.Message(new QuickFix.MsgType("UAN"));
+                //Request for Position :: new QuickFix.Fields.MsgType("UAN")
+                QuickFix.FIX42.RequestForPosition rfp = new QuickFix.FIX42.RequestForPosition();
 
-                rfp.setField(new TT.PosReqType(reqtype));
+                rfp.SetField(new TT.PosReqType(reqtype));
                 switch (reqtype)
                 {
                     case TT.PosReqType.SOD:
-                        rfp.setField(new TT.PosReqId("SOD"));
+                        rfp.SetField(new TT.PosReqId("SOD"));
                         break;
                     case TT.PosReqType.DSOD:
-                        rfp.setField(new TT.PosReqId("DSOD"));
+                        rfp.SetField(new TT.PosReqId("DSOD"));
                         break;
                     case TT.PosReqType.MANUAL_FILL:
-                        rfp.setField(new TT.PosReqId("MANUAL_FILL"));
+                        rfp.SetField(new TT.PosReqId("MANUAL_FILL"));
                         break;
                     case TT.PosReqType.TRADES:
-                        rfp.setField(new TT.PosReqId("TRADES"));
+                        rfp.SetField(new TT.PosReqId("TRADES"));
                         break;
                     default:
                         break;
                 }
 
-                QuickFix.Session.sendToTarget(rfp, orderSessionID);
+                QuickFix.Session.SendToTarget(rfp, orderSessionID);
             }
             catch (Exception ex)
             { log.WriteLog(ex.ToString()); }
@@ -104,39 +104,41 @@ namespace TT
         /// For eurex this is the ticker and expiration</param>
         /// <param name="qty">order quantity</param>
         /// <param name="bs">buy or sell</param>
-        public void ttNewOrderSingle(string _account, string SecEx, string symbol, string secID, double qty, char bs, string gateway)
+        public void ttNewOrderSingle(string _account, string SecEx, string symbol, string secID, decimal qty, char bs, string gateway)
         {
             try
             {
                 //log.WriteLog(string.Format("{0} {1} {2} {3} {4} {5} {6}", _account, SecEx, symbol, secID, qty, bs, gateway));
 
-                QuickFix42.NewOrderSingle nos = new QuickFix42.NewOrderSingle();
+                QuickFix.FIX42.NewOrderSingle nos = new QuickFix.FIX42.NewOrderSingle();
 
                 string id = uniqueID();
-                nos.set(new QuickFix.ClOrdID(id));
+                nos.Set(new QuickFix.Fields.ClOrdID(id));
                 inflightOrders.Add(id);
 
-                nos.set(new QuickFix.SecurityExchange(SecEx));
-                nos.set(new QuickFix.Symbol(symbol));
-                nos.set(new QuickFix.SecurityID(secID));
+                nos.Set(new QuickFix.Fields.SecurityExchange(SecEx));
+                nos.Set(new QuickFix.Fields.Symbol(symbol));
+                nos.Set(new QuickFix.Fields.SecurityID(secID));
 
-                nos.set(new QuickFix.OrderQty(qty));
-                nos.set(new QuickFix.Side(bs));
-                nos.set(new QuickFix.OrdType(QuickFix.OrdType.MARKET));
-                nos.set(new QuickFix.Account(_account));
+                nos.Set(new QuickFix.Fields.OrderQty(qty));
+                nos.Set(new QuickFix.Fields.Side(bs));
+                nos.Set(new QuickFix.Fields.OrdType(QuickFix.Fields.OrdType.MARKET));
+                nos.Set(new QuickFix.Fields.Account(_account));
                 
-                //To add a TT custom tag to a QuickFix Message you must use setString or similar
-                //the set method of the QuickFix42 message only allows setting standard FIX 4.2 fields
-                nos.setString(TT.TTAccountType.FIELD, TT.TTAccountType.M1);
-
+                //To add a TT custom tag to a QuickFix Message you must use SetString or similar
+                //the Set method of the QuickFix.FIX42 message only allows setting standard FIX 4.2 fields
+                //SetString(TTAccountType.FIELD, TT.TTAccountType.M1);
+                //TODO is ACCOUNT_IS_HOUSE_TRADER_AND_IS_CROSS_MARGINED = M1??
+                nos.CustomerOrFirm.setValue(QuickFix.Fields.AccountType.ACCOUNT_IS_HOUSE_TRADER_AND_IS_CROSS_MARGINED);
+                
                 //Alternative code that can only be used if FA is setup to accept tag 47 and 204 instead of custom tag 18205
-                //nos.set(new QuickFix.Rule80A(QuickFix.Rule80A.AGENCY_SINGLE_ORDER));
-                //nos.set(new QuickFix.CustomerOrFirm(QuickFix.CustomerOrFirm.CUSTOMER));
+                //nos.Set(new QuickFix.Fields.Rule80A(QuickFix.Fields.Rule80A.AGENCY_SINGLE_ORDER));
+                //nos.Set(new QuickFix.Fields.CustomerOrFirm(QuickFix.Fields.CustomerOrFirm.CUSTOMER));
 
                 //required for environments with multiple gateways with same products
-                nos.setString(TT.ExchangeGateway.FIELD, gateway);
+                nos.ExchangeGateway.setValue(gateway);
 
-                QuickFix.Session.sendToTarget(nos, orderSessionID);
+                QuickFix.Session.SendToTarget(nos, orderSessionID);
 
             }
             catch (Exception ex)
@@ -154,22 +156,22 @@ namespace TT
         {
             try
             {
-                QuickFix42.SecurityDefinitionRequest sdr = new QuickFix42.SecurityDefinitionRequest();
+                QuickFix.FIX42.SecurityDefinitionRequest sdr = new QuickFix.FIX42.SecurityDefinitionRequest();
 
-                sdr.set(new QuickFix.SecurityReqID(string.Concat(SecEx, ":", symbol, ":", secID)));
+                sdr.Set(new QuickFix.Fields.SecurityReqID(string.Concat(SecEx, ":", symbol, ":", secID)));
 
-                //sdr.set(new QuickFix.SecurityRequestType(3));
+                //sdr.Set(new QuickFix.Fields.SecurityRequestType(3));
 
-                sdr.set(new QuickFix.SecurityExchange(SecEx));
-                sdr.set(new QuickFix.Symbol(symbol));
-                sdr.set(new QuickFix.SecurityID(secID));
+                sdr.Set(new QuickFix.Fields.SecurityExchange(SecEx));
+                sdr.Set(new QuickFix.Fields.Symbol(symbol));
+                sdr.Set(new QuickFix.Fields.SecurityID(secID));
 
                 //possible values include CS FOR FUT GOVT MLEG OPT NRG
-                //sdr.set(new QuickFix.SecurityType(QuickFix.SecurityType.FUTURE));
+                //sdr.Set(new QuickFix.Fields.SecurityType(QuickFix.Fields.SecurityType.FUTURE));
 
-                sdr.setField(new TT.RequestTickTable("Y"));
+                sdr.SetField(new TT.RequestTickTable("Y"));
 
-                QuickFix.Session.sendToTarget(sdr, priceSessionID);
+                QuickFix.Session.SendToTarget(sdr, priceSessionID);
 
             }
             catch (Exception ex)
@@ -187,30 +189,30 @@ namespace TT
         {
             try
             {
-                QuickFix42.MarketDataRequest mdr = new QuickFix42.MarketDataRequest();
+                QuickFix.FIX42.MarketDataRequest mdr = new QuickFix.FIX42.MarketDataRequest();
 
-                mdr.set(new QuickFix.MDReqID(string.Concat(SecEx, ":", symbol, ":", secID)));
-                mdr.set(new QuickFix.SubscriptionRequestType(QuickFix.SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES));
-                mdr.set(new QuickFix.MDUpdateType(QuickFix.MDUpdateType.FULL_REFRESH)); //required if above type is SNAPSHOT_PLUS_UPDATES
-                mdr.set(new QuickFix.MarketDepth(1));
-                mdr.set(new QuickFix.AggregatedBook(true));
+                mdr.Set(new QuickFix.Fields.MDReqID(string.Concat(SecEx, ":", symbol, ":", secID)));
+                mdr.Set(new QuickFix.Fields.SubscriptionRequestType(QuickFix.Fields.SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES));
+                mdr.Set(new QuickFix.Fields.MDUpdateType(QuickFix.Fields.MDUpdateType.FULL_REFRESH)); //required if above type is SNAPSHOT_PLUS_UPDATES
+                mdr.Set(new QuickFix.Fields.MarketDepth(1));
+                mdr.Set(new QuickFix.Fields.AggregatedBook(true));
 
-                QuickFix42.MarketDataRequest.NoMDEntryTypes tgroup = new QuickFix42.MarketDataRequest.NoMDEntryTypes();
-                tgroup.set(new QuickFix.MDEntryType(QuickFix.MDEntryType.BID));
-                mdr.addGroup(tgroup);
-                tgroup.set(new QuickFix.MDEntryType(QuickFix.MDEntryType.OFFER));
-                mdr.addGroup(tgroup);
-                //tgroup.set(new QuickFix.MDEntryType(QuickFix.MDEntryType.TRADE));
+                QuickFix.FIX42.MarketDataRequest.NoMDEntryTypesGroup tgroup = new QuickFix.FIX42.MarketDataRequest.NoMDEntryTypesGroup();
+                tgroup.Set(new QuickFix.Fields.MDEntryType(QuickFix.Fields.MDEntryType.BID));
+                mdr.AddGroup(tgroup);
+                tgroup.Set(new QuickFix.Fields.MDEntryType(QuickFix.Fields.MDEntryType.OFFER));
+                mdr.AddGroup(tgroup);
+                //tgroup.Set(new QuickFix.Fields.MDEntryType(QuickFix.Fields.MDEntryType.TRADE));
                 //mdr.addGroup(tgroup);
 
-                QuickFix42.MarketDataRequest.NoRelatedSym sgroup = new QuickFix42.MarketDataRequest.NoRelatedSym();
+                QuickFix.FIX42.MarketDataRequest.NoRelatedSymGroup sgroup = new QuickFix.FIX42.MarketDataRequest.NoRelatedSymGroup();
 
-                sgroup.set(new QuickFix.SecurityExchange(SecEx));
-                sgroup.set(new QuickFix.Symbol(symbol));
-                sgroup.set(new QuickFix.SecurityID(secID));
-                mdr.addGroup(sgroup);
+                sgroup.Set(new QuickFix.Fields.SecurityExchange(SecEx));
+                sgroup.Set(new QuickFix.Fields.Symbol(symbol));
+                sgroup.Set(new QuickFix.Fields.SecurityID(secID));
+                mdr.AddGroup(sgroup);
 
-                QuickFix.Session.sendToTarget(mdr, priceSessionID);
+                QuickFix.Session.SendToTarget(mdr, priceSessionID);
             }
             catch (Exception ex)
             { log.WriteLog(ex.ToString()); }
@@ -223,16 +225,16 @@ namespace TT
         {
             try
             {
-                QuickFix42.OrderStatusRequest osr = new QuickFix42.OrderStatusRequest();
+                QuickFix.FIX42.OrderStatusRequest osr = new QuickFix.FIX42.OrderStatusRequest();
 
                 //filter by account - optional
-                //osr.set(new QuickFix.Account("sl002004"));
+                //osr.Set(new QuickFix.Fields.Account("sl002004"));
                 //omit this for order book download
-                //osr.set(new QuickFix.ClOrdID("uniqueClOrdID"));
-                //osr.set(new QuickFix.OrderID("TTORDERKEY"));
+                //osr.Set(new QuickFix.Fields.ClOrdID("uniqueClOrdID"));
+                //osr.Set(new QuickFix.Fields.OrderID("TTORDERKEY"));
 
                 //Code modified on 12/15/2009 3:03:42 PM replace hardcoded session name with OrderTargetCompID
-                QuickFix.Session.sendToTarget(osr, orderSessionID);
+                QuickFix.Session.SendToTarget(osr, orderSessionID);
 
 
             }
@@ -241,20 +243,20 @@ namespace TT
         }
 
         /// <summary>
-        /// Send order cancel request message for order specified by TTOrderKey (QuickFix.OrderID)
+        /// Send order cancel request message for order specified by TTOrderKey (QuickFix.Fields.OrderID)
         /// </summary>
         /// <param name="TTOrderkey"></param>
         public void ttOrderCancelRequest(string TTOrderkey)
         {
             try
             {
-                QuickFix42.OrderCancelRequest ocr = new QuickFix42.OrderCancelRequest();
+                QuickFix.FIX42.OrderCancelRequest ocr = new QuickFix.FIX42.OrderCancelRequest();
 
 
-                ocr.set(new QuickFix.ClOrdID(uniqueID()));
-                ocr.set(new QuickFix.OrderID(TTOrderkey));
+                ocr.Set(new QuickFix.Fields.ClOrdID(uniqueID()));
+                ocr.Set(new QuickFix.Fields.OrderID(TTOrderkey));
 
-                QuickFix.Session.sendToTarget(ocr, orderSessionID);
+                QuickFix.Session.SendToTarget(ocr, orderSessionID);
 
             }
             catch (Exception ex)

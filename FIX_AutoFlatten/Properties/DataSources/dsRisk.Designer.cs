@@ -1279,7 +1279,7 @@ namespace FIX_AutoFlatten.Properties.DataSources {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public tblTraderRow AddtblTraderRow(string MGT, string Account, double Limit, double TotalPL, int EmailAlert) {
+            public tblTraderRow AddtblTraderRow(string MGT, string Account, decimal Limit, decimal TotalPL, int EmailAlert) {
                 tblTraderRow rowtblTraderRow = ((tblTraderRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         MGT,
@@ -1330,9 +1330,9 @@ namespace FIX_AutoFlatten.Properties.DataSources {
                 base.Columns.Add(this.columnMGT);
                 this.columnAccount = new global::System.Data.DataColumn("Account", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnAccount);
-                this.columnLimit = new global::System.Data.DataColumn("Limit", typeof(double), null, global::System.Data.MappingType.Element);
+                this.columnLimit = new global::System.Data.DataColumn("Limit", typeof(decimal), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnLimit);
-                this.columnTotalPL = new global::System.Data.DataColumn("TotalPL", typeof(double), null, global::System.Data.MappingType.Element);
+                this.columnTotalPL = new global::System.Data.DataColumn("TotalPL", typeof(decimal), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnTotalPL);
                 this.columnEmailAlert = new global::System.Data.DataColumn("EmailAlert", typeof(int), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnEmailAlert);
@@ -1613,7 +1613,7 @@ namespace FIX_AutoFlatten.Properties.DataSources {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public tblSecurityRow AddtblSecurityRow(string SecurityExchange, string Symbol, string SecurityID, string Currency, double ExchangePointValue, double BidPrice, double AskPrice) {
+            public tblSecurityRow AddtblSecurityRow(string SecurityExchange, string Symbol, string SecurityID, string Currency, decimal ExchangePointValue, decimal BidPrice, decimal AskPrice) {
                 tblSecurityRow rowtblSecurityRow = ((tblSecurityRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         SecurityExchange,
@@ -1674,11 +1674,11 @@ namespace FIX_AutoFlatten.Properties.DataSources {
                 base.Columns.Add(this.columnSecurityID);
                 this.columnCurrency = new global::System.Data.DataColumn("Currency", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnCurrency);
-                this.columnExchangePointValue = new global::System.Data.DataColumn("ExchangePointValue", typeof(double), null, global::System.Data.MappingType.Element);
+                this.columnExchangePointValue = new global::System.Data.DataColumn("ExchangePointValue", typeof(decimal), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnExchangePointValue);
-                this.columnBidPrice = new global::System.Data.DataColumn("BidPrice", typeof(double), null, global::System.Data.MappingType.Element);
+                this.columnBidPrice = new global::System.Data.DataColumn("BidPrice", typeof(decimal), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnBidPrice);
-                this.columnAskPrice = new global::System.Data.DataColumn("AskPrice", typeof(double), null, global::System.Data.MappingType.Element);
+                this.columnAskPrice = new global::System.Data.DataColumn("AskPrice", typeof(decimal), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnAskPrice);
                 this.Constraints.Add(new global::System.Data.UniqueConstraint("Constraint1", new global::System.Data.DataColumn[] {
                                 this.columnSecurityExchange,
@@ -2249,11 +2249,11 @@ namespace FIX_AutoFlatten.Properties.DataSources {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
             public double AvgBuy {
                 get {
-                    if (this.IsAvgBuyNull()) {
-                        return 0D;
-                    }
-                    else {
+                    try {
                         return ((double)(this[this.tabletblPositions.AvgBuyColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'AvgBuy\' in table \'tblPositions\' is DBNull.", e);
                     }
                 }
                 set {
@@ -2619,10 +2619,10 @@ namespace FIX_AutoFlatten.Properties.DataSources {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public double Limit {
+            public decimal Limit {
                 get {
                     try {
-                        return ((double)(this[this.tabletblTrader.LimitColumn]));
+                        return ((decimal)(this[this.tabletblTrader.LimitColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
                         throw new global::System.Data.StrongTypingException("The value for column \'Limit\' in table \'tblTrader\' is DBNull.", e);
@@ -2635,10 +2635,10 @@ namespace FIX_AutoFlatten.Properties.DataSources {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public double TotalPL {
+            public decimal TotalPL {
                 get {
                     try {
-                        return ((double)(this[this.tabletblTrader.TotalPLColumn]));
+                        return ((decimal)(this[this.tabletblTrader.TotalPLColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
                         throw new global::System.Data.StrongTypingException("The value for column \'TotalPL\' in table \'tblTrader\' is DBNull.", e);
@@ -2779,10 +2779,10 @@ namespace FIX_AutoFlatten.Properties.DataSources {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public double ExchangePointValue {
+            public decimal ExchangePointValue {
                 get {
                     try {
-                        return ((double)(this[this.tabletblSecurity.ExchangePointValueColumn]));
+                        return ((decimal)(this[this.tabletblSecurity.ExchangePointValueColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
                         throw new global::System.Data.StrongTypingException("The value for column \'ExchangePointValue\' in table \'tblSecurity\' is DBNull.", e);
@@ -2795,10 +2795,10 @@ namespace FIX_AutoFlatten.Properties.DataSources {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public double BidPrice {
+            public decimal BidPrice {
                 get {
                     try {
-                        return ((double)(this[this.tabletblSecurity.BidPriceColumn]));
+                        return ((decimal)(this[this.tabletblSecurity.BidPriceColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
                         throw new global::System.Data.StrongTypingException("The value for column \'BidPrice\' in table \'tblSecurity\' is DBNull.", e);
@@ -2811,10 +2811,10 @@ namespace FIX_AutoFlatten.Properties.DataSources {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
-            public double AskPrice {
+            public decimal AskPrice {
                 get {
                     try {
-                        return ((double)(this[this.tabletblSecurity.AskPriceColumn]));
+                        return ((decimal)(this[this.tabletblSecurity.AskPriceColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
                         throw new global::System.Data.StrongTypingException("The value for column \'AskPrice\' in table \'tblSecurity\' is DBNull.", e);
