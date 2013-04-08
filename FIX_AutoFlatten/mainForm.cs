@@ -25,6 +25,9 @@ namespace FIX_AutoFlatten
 {
     public partial class mainForm : Form
     {
+        /// <summary>
+        /// starting point of application 
+        /// </summary>
         public mainForm()
         {
             InitializeComponent();
@@ -357,13 +360,13 @@ namespace FIX_AutoFlatten
         //}
 
         /// <summary>
-        /// calculate P&L 
+        /// calculate P&L;
         /// </summary>
-        /// <param name="SecEx"></param>
-        /// <param name="product"></param>
-        /// <param name="secID"></param>
-        /// <param name="bid"></param>
-        /// <param name="ask"></param>
+        /// <param name="SecEx">GATEWAY</param>
+        /// <param name="product">PRODUCT TICKER</param>
+        /// <param name="secID">SECURITY_ID</param>
+        /// <param name="bid">Market Bid Price</param>
+        /// <param name="ask">Market Ask Price</param>
         private void CalcPnL(string SecEx, string product, string secID, decimal  bid, decimal  ask)
         {
             current = DateTime.Now;
@@ -541,7 +544,7 @@ namespace FIX_AutoFlatten
                         !dr[dsRisk.tblPositions.BuyPosColumn].Equals(dr[dsRisk.tblPositions.SellPosColumn]))
                     {
                         string account = dr[dsRisk.tblPositions.AccountColumn].ToString();
-                        if (account == null || account == "")
+                        if (String.IsNullOrEmpty(account))
                         { account = dsRisk.tblTrader.Rows.Find(MGT).Field<string>(dsRisk.tblTrader.AccountColumn); }
 
                         int buys = (int)dr[dsRisk.tblPositions.BuyPosColumn];
@@ -701,15 +704,17 @@ namespace FIX_AutoFlatten
         }
 
         /// <summary>
-        /// Add a new position
+        /// 
         /// </summary>
         /// <param name="MGT"></param>
+        /// <param name="acct"></param>
         /// <param name="SecEx"></param>
         /// <param name="product"></param>
         /// <param name="secID"></param>
         /// <param name="tradesize"></param>
         /// <param name="side"></param>
         /// <param name="price"></param>
+        /// <param name="gateway"></param>
         private void UpdatePosition(
             string MGT, 
             string acct,
@@ -911,6 +916,8 @@ namespace FIX_AutoFlatten
             }
             catch (Exception ex)
             { log.WriteList(ex.ToString());            }
+
+            mail.Dispose();
         }
 
         /// <summary>

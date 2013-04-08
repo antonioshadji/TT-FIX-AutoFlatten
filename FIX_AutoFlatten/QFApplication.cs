@@ -384,10 +384,10 @@ namespace QuickFix
 
                     send.ttGatewayStatusRequest(QuickFix.Fields.SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES);
 
-                    send.ttRequestForPosition(TT.PosReqType.SOD);
-                    send.ttRequestForPosition(TT.PosReqType.DSOD);
-                    send.ttRequestForPosition(TT.PosReqType.MANUAL_FILL);
-                    send.ttRequestForPosition(TT.PosReqType.TRADES);
+                    send.ttRequestForPosition(QuickFix.Fields.PosReqType.START_OF_DAYS);
+                    send.ttRequestForPosition(QuickFix.Fields.PosReqType.DETAILED_START_OF_DAYS);
+                    send.ttRequestForPosition(QuickFix.Fields.PosReqType.MANUAL_FILLS);
+                    send.ttRequestForPosition(QuickFix.Fields.PosReqType.TRADES);
                     
                 }
 
@@ -416,7 +416,7 @@ namespace QuickFix
 
                     if (mt.getValue() == QuickFix.Fields.MsgType.LOGON )
                     {
-                        if (!_password.Equals(""))
+                        if (!String.IsNullOrEmpty(_password)) 
                         {
                             message.SetField(new QuickFix.Fields.RawData(_password));
                         }
@@ -465,19 +465,19 @@ namespace QuickFix
 
                     updateDisplay(string.Format("fromApp: {0}", msgTypeValue));
                     
-                    switch (msgTypeValue)
-                    {
-                        case "UAT":
-                            onGatewayStatusMessage((QuickFix.FIX42.Message)message, session);
-                            break;
-                        case "UAP":
-                            onPositionReportMessage((QuickFix.FIX42.Message)message, session);
-                            break;
+                    //switch (msgTypeValue)
+                    //{
+                    //    case "UAT":
+                    //        onGatewayStatusMessage((QuickFix.FIX42.Message)message, session);
+                    //        break;
+                    //    case "UAP":
+                    //        onPositionReportMessage((QuickFix.FIX42.Message)message, session);
+                    //        break;
 
-                        default:
+                    //    default:
                             Crack(message, session);
-                            break;
-                    }
+                    //        break;
+                    //}
                 }
                 catch (QuickFix.UnsupportedMessageType umt)
                 {
@@ -566,7 +566,7 @@ namespace QuickFix
                 else
                 { OK2Update = false; }
 
-                TT.ExchangeGateway eg = new TT.ExchangeGateway();
+                QuickFix.Fields.ExchangeGateway eg = new Fields.ExchangeGateway();
                 if (message.IsSetField(eg))
                 {
                     gateway = message.GetField(eg).getValue();
@@ -825,35 +825,29 @@ namespace QuickFix
 
         }
 
-        //receive responses from position request messages
-        public void onPositionReportMessage(QuickFix.FIX42.Message message, SessionID session)
+        public void OnMessage(QuickFix.FIX42.PositionReport message, QuickFix.SessionID session)
         {
-
-            TT.PosReqId req = new TT.PosReqId(); 
-            string r = message.GetField(req).getValue(); //SOD, DSOD, MANUAL_FILL, TRADES
-            log.WriteLog(r);
-
-            TT.TotalNumPosReports num = new TT.TotalNumPosReports();
-            int numReports = message.GetField(num).getValue() ;
+            string reqID = message.PosReqId.ToString();
+            log.WriteLog(reqID);
+            int numReports = message.TotalNumPosReports.getValue();
             log.WriteLog(numReports.ToString());
 
-            TT.PosMaintRptId uniqueID = new TT.PosMaintRptId();
-
-            if (posReports.Contains(message.GetField(uniqueID).getValue()))
-            { updateDisplay("Duplicate position report recieved and discarded: " + uniqueID.ToString()); }
+            string uniqueID = message.PosMaintRptId.getValue();
+            if (posReports.Contains(uniqueID))
+            { updateDisplay("Duplicate position report recieved and discarded: " + uniqueID); }
             else
             {
-                posReports.Add(message.GetField(uniqueID).getValue());
+                posReports.Add(uniqueID);
 
-                if (message.IsSetField(num) && numReports != 0)
+                if (numReports != 0)
                 {
-                    updateDisplay(string.Format("{0} updates in this {1} report",num, r));
+                    updateDisplay(string.Format("{0} updates in this {1} report", numReports, reqID));
                     posTableUpdate(message, session);
                 }
                 else
-                { updateDisplay(string.Format("No Updates in this {0} position report", r)); }
+                { updateDisplay(string.Format("No Updates in this {0} position report", reqID)); }
 
-                switch (r)
+                switch (reqID)
                 {
                     case "SOD":
                         ctrSOD += 1;
@@ -882,7 +876,7 @@ namespace QuickFix
                 log.WriteLog("SOD Loaded: " + SODLoaded.ToString());
                 log.WriteLog("MAN Loaded: " + ManualFillsLoaded.ToString());
                 log.WriteLog("TRD Loaded: " + previousTradesLoaded.ToString());
- 
+
                 if (SODLoaded && ManualFillsLoaded && previousTradesLoaded && !PositionLoadedReported)
                 {
                     updateOnOff();
@@ -891,38 +885,131 @@ namespace QuickFix
                 }
             }
         }
+        
+        //receive responses from position request messages
+        //public void onPositionReportMessage(QuickFix.FIX42.Message message, SessionID session)
+        //{
+
+        //    TT.PosReqId req = new TT.PosReqId(); 
+        //    string r = message.GetField(req).getValue(); //SOD, DSOD, MANUAL_FILL, TRADES
+        //    log.WriteLog(r);
+
+        //    TT.TotalNumPosReports num = new TT.TotalNumPosReports();
+        //    int numReports = message.GetField(num).getValue() ;
+        //    log.WriteLog(numReports.ToString());
+
+        //    TT.PosMaintRptId uniqueID = new TT.PosMaintRptId();
+
+        //    if (posReports.Contains(message.GetField(uniqueID).getValue()))
+        //    { updateDisplay("Duplicate position report recieved and discarded: " + uniqueID.ToString()); }
+        //    else
+        //    {
+        //        posReports.Add(message.GetField(uniqueID).getValue());
+
+        //        if (message.IsSetField(num) && numReports != 0)
+        //        {
+        //            updateDisplay(string.Format("{0} updates in this {1} report",num, r));
+        //            posTableUpdate(message, session);
+        //        }
+        //        else
+        //        { updateDisplay(string.Format("No Updates in this {0} position report", r)); }
+
+        //        switch (r)
+        //        {
+        //            case "SOD":
+        //                ctrSOD += 1;
+        //                if (numReports == 0 || ctrSOD == numReports) { SODLoaded = true; }
+
+        //                break;
+        //            case "DSOD":
+        //                ctrSOD += 1;
+        //                if (numReports == 0 || ctrSOD == numReports) { SODLoaded = true; }
+
+        //                break;
+        //            case "MANUAL_FILL":
+        //                ctrMAN += 1;
+        //                if (numReports == 0 || ctrMAN == numReports) { ManualFillsLoaded = true; }
+
+        //                break;
+        //            case "TRADES":
+        //                ctrTRD += 1;
+        //                if (numReports == 0 || ctrTRD == numReports) { previousTradesLoaded = true; }
+
+        //                break;
+        //            default:
+        //                break;
+        //        }
+
+        //        log.WriteLog("SOD Loaded: " + SODLoaded.ToString());
+        //        log.WriteLog("MAN Loaded: " + ManualFillsLoaded.ToString());
+        //        log.WriteLog("TRD Loaded: " + previousTradesLoaded.ToString());
+ 
+        //        if (SODLoaded && ManualFillsLoaded && previousTradesLoaded && !PositionLoadedReported)
+        //        {
+        //            updateOnOff();
+        //            updateDisplay("RISK MANUAL FILLS AND TRADES LOADED");
+        //            PositionLoadedReported = true;
+        //        }
+        //    }
+        //}
+
+        public void OnMessage(QuickFix.FIX42.GatewayStatus message, SessionID session)
+        {
+            QuickFix.Group g = new QuickFix.FIX42.GatewayStatus.NoGatewayStatusGroup();
+            for (int i = 1; i <= message.GroupCount(message.NoGatewayStatus.getValue()); i++)
+            {
+                message.GetGroup(i, g);
+                string exch = g.GetField(new QuickFix.Fields.ExchangeGateway()).getValue();
+                int server = g.GetField(new QuickFix.Fields.SubExchangeGateway()).getValue();
+                int status = g.GetField(new QuickFix.Fields.GatewayStatus()).getValue();
+                string text = null;
+
+                try
+                {
+                    text = g.GetField(new QuickFix.Fields.Text()).ToString();
+                    updateDisplay(string.Format("Text: {0}", text));
+                }
+                catch (Exception ex)
+                { updateDisplay(string.Format("NO TEXT:{0}", ex.ToString())); }
+
+                updateGateway(exch, 
+                    new QuickFix.Fields.SubExchangeGateway(server).toStringField().ToString(), 
+                    new QuickFix.Fields.GatewayStatus(status).toStringField().ToString(),
+                    text);
+            }
+        }
 
         //receive gateway status messages
-        public void onGatewayStatusMessage(QuickFix.FIX42.Message message, SessionID session)
-        {
+        //public void onGatewayStatusMessage(QuickFix.FIX42.Message message, SessionID session)
+        //{
 
-            if (message.IsSetField(TT.NoGatewayStatus.FIELD))
-            {
-                //updateDisplay(string.Format("Found {0} NoGatewayStatus groups", message.groupCount(TT.NoGatewayStatus.FIELD)));
-                QuickFix.Group g = new Group(18201, 18202, new int[] { 18202, 207, 18203, 18204, 58, 0 });
+        //    if (message.IsSetField(TT.NoGatewayStatus.FIELD))
+        //    {
+        //        //updateDisplay(string.Format("Found {0} NoGatewayStatus groups", message.groupCount(TT.NoGatewayStatus.FIELD)));
+        //        QuickFix.Group g = new Group(18201, 18202, new int[] { 18202, 207, 18203, 18204, 58, 0 });
 
-                for (int i = 1; i <= message.GroupCount(TT.NoGatewayStatus.FIELD); i++)
-                {
-                    message.GetGroup(i, g);
-                    string exch = g.GetField(new TT.ExchangeGateway()).getValue();
-                    int server = g.GetField(new TT.SubExchangeGateway()).getValue();
-                    int status = g.GetField(new TT.GatewayStatus()).getValue();
-                    string text = null;
-                    //updateDisplay(string.Format("ExchangeGateway:{0}, SubExchangeGateway:{1},GatewayStatus:{0}", exch, server, status));
+        //        for (int i = 1; i <= message.GroupCount(TT.NoGatewayStatus.FIELD); i++)
+        //        {
+        //            message.GetGroup(i, g);
+        //            string exch = g.GetField(new TT.ExchangeGateway()).getValue();
+        //            int server = g.GetField(new TT.SubExchangeGateway()).getValue();
+        //            int status = g.GetField(new TT.GatewayStatus()).getValue();
+        //            string text = null;
+        //            //updateDisplay(string.Format("ExchangeGateway:{0}, SubExchangeGateway:{1},GatewayStatus:{0}", exch, server, status));
 
-                    if (g.IsSetField(new QuickFix.Fields.Text()))
-                    { 
-                        text = g.GetField(new QuickFix.Fields.Text()).ToString();
-                        updateDisplay(string.Format("Text: {0}", text)); 
-                    }
+        //            if (g.IsSetField(new QuickFix.Fields.Text()))
+        //            { 
+        //                text = g.GetField(new QuickFix.Fields.Text()).ToString();
+        //                updateDisplay(string.Format("Text: {0}", text)); 
+        //            }
 
-                    updateGateway(exch, TT.SubExchangeGateway.getString(server), TT.GatewayStatus.getString(status),text);
+        //            updateGateway(exch, TT.SubExchangeGateway.getString(server), TT.GatewayStatus.getString(status),text);
                     
-                }
-            }
+        //        }
+        //    }
 
 
-        }
+        //}
 
         #endregion
        

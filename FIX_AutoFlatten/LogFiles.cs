@@ -69,6 +69,11 @@ namespace LOG
                 { 
                     TextWriter tw = new StreamWriter(logFile);
                     logTextWriter = TextWriter.Synchronized(tw);
+                    //this line below added to correct warning:
+                    //Warning	395	CA2000 : Microsoft.Reliability : 
+                    //In method 'LogFiles.CreateLog(string, ListBox)', call System.IDisposable.Dispose on object 'tw' before all references to it are out of scope.	C:\Users\ahadjigeorgalis\Documents\GitHub\TT-FIX-AutoFlatten\FIX_AutoFlatten\LogFiles.cs	70	FIX_AutoFlatten
+                    //warning still shows after edit
+                    tw.Dispose();
                 }
                 catch (Exception e)
                 { MessageBox.Show("CREATELOG: " + e.ToString()); }
