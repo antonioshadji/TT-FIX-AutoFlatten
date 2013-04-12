@@ -325,17 +325,17 @@ namespace QuickFix
                 }
 
 
-                if (message.IsSetField(TT.NoGateways.FIELD))
-                { updateDisplay("TT.NoGateways"); }
+                if (message.IsSetField(QuickFix.Fields.Tags.NoGateways))
+                { updateDisplay("NoGateways"); }
 
-                if (message.IsSetField(TT.NoGatewayStatus.FIELD))
-                { updateDisplay("TT.NoGatewayStatus"); }
+                if (message.IsSetField(QuickFix.Fields.Tags.NoGatewayStatus))
+                { updateDisplay("NoGatewayStatus"); }
 
                 if (message.IsSetField(QuickFix.Fields.Tags.NoMDEntries))
-                { updateDisplay("QuickFix.Fields.NoMDEntries"); }
+                { updateDisplay("NoMDEntries"); }
 
                 if (message.IsSetField(QuickFix.Fields.Tags.NoMDEntryTypes))
-                { updateDisplay("QuickFix.Fields.NoMDEntryTypes"); }
+                { updateDisplay("NoMDEntryTypes"); }
 
             }
             catch (Exception ex)
@@ -807,7 +807,8 @@ namespace QuickFix
                 string cur = null;
                 decimal exPtVal = 0.00M;
 
-                TT.ExchPointValue epv = new TT.ExchPointValue();
+
+                QuickFix.Fields.ExchPointValue epv = new QuickFix.Fields.ExchPointValue();
                 if (message.IsSetField(epv))
                 { exPtVal = message.GetField(epv).getValue(); }
 
