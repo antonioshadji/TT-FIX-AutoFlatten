@@ -74,6 +74,10 @@ namespace FIX_AutoFlatten
                 _LoadMGT();
                 _LoadCurrency();
 
+                #region Register Delegates for passing data between threads
+                //these calls are registering local methods for updating the gui
+                //the _qf. methods are delegates that pass the data from the QuickFix thread 
+                //to the Gui thread.    
                 _qf.registerLogUpdater(log.WriteList);
                 _qf.registerGatewayUpdater(UpdateGateway);
                 _qf.registerPositionUpdater(UpdatePosition);
@@ -82,7 +86,8 @@ namespace FIX_AutoFlatten
                 _qf.registerOrderCanceler(orderCancel);
                 _qf.registerOnOff(activateOnOff);
                 _qf.registerOrderMgmt(updateOrderMgmt);
-                _qf.registerClearPOS(ClearPositions);
+                _qf.registerClearPOS(ClearPositions); 
+                #endregion
                 
                 _qf.initiate("ini.cfg", "12345678", true, this);
 

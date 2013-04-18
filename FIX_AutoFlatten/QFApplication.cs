@@ -58,7 +58,6 @@ namespace QuickFix
         private QuickFix.Transport.SocketInitiator _initiator = null;
 
         #region Delegates for transferring data to mainForm Thread
-        //not used
         public delegate void ThreadSafePassMessage(QuickFix.Message msg, QuickFix.Session s);
         private ThreadSafePassMessage _tspm;
         public void registerMessagePasser(ThreadSafePassMessage method)
