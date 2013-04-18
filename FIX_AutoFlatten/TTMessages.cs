@@ -21,6 +21,9 @@ using System.Collections;
 
 namespace TT
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class SendMsg
     {
         private static LOG.LogFiles log = new LOG.LogFiles();
@@ -49,7 +52,7 @@ namespace TT
                 QuickFix.FIX42.GatewayStatusRequest gsr = new QuickFix.FIX42.GatewayStatusRequest();
                 gsr.SubscriptionRequestType.setValue(SubscriptionRequestType);
 
-                gsr.SetField(new TT.GatewayStatusReqId(uniqueID()));
+                gsr.GatewayStatusReqId.setValue(uniqueID()); 
 
                 QuickFix.Session.SendToTarget(gsr, orderSessionID);
             }
@@ -69,20 +72,20 @@ namespace TT
                 //Request for Position :: new QuickFix.Fields.MsgType("UAN")
                 QuickFix.FIX42.RequestForPosition rfp = new QuickFix.FIX42.RequestForPosition();
 
-                rfp.SetField(new TT.PosReqType(reqtype));
+                rfp.SetField(new QuickFix.Fields.PosReqType(reqtype));
                 switch (reqtype)
                 {
-                    case TT.PosReqType.SOD:
-                        rfp.SetField(new TT.PosReqId("SOD"));
+                    case QuickFix.Fields.PosReqType.START_OF_DAYS:
+                        rfp.PosReqId.setValue("SOD");
                         break;
-                    case TT.PosReqType.DSOD:
-                        rfp.SetField(new TT.PosReqId("DSOD"));
+                    case QuickFix.Fields.PosReqType.DETAILED_START_OF_DAYS:
+                        rfp.PosReqId.setValue("DSOD");
                         break;
-                    case TT.PosReqType.MANUAL_FILL:
-                        rfp.SetField(new TT.PosReqId("MANUAL_FILL"));
+                    case QuickFix.Fields.PosReqType.MANUAL_FILLS:
+                        rfp.PosReqId.setValue("MANUAL_FILL");
                         break;
-                    case TT.PosReqType.TRADES:
-                        rfp.SetField(new TT.PosReqId("TRADES"));
+                    case QuickFix.Fields.PosReqType.TRADES:
+                        rfp.PosReqId.setValue("TRADES");
                         break;
                     default:
                         break;
@@ -169,7 +172,8 @@ namespace TT
                 //possible values include CS FOR FUT GOVT MLEG OPT NRG
                 //sdr.Set(new QuickFix.Fields.SecurityType(QuickFix.Fields.SecurityType.FUTURE));
 
-                sdr.SetField(new TT.RequestTickTable("Y"));
+                //old code was:: SetField(new TT.RequestTickTable("Y"));
+                sdr.RequestTickTable.setValue(true); 
 
                 QuickFix.Session.SendToTarget(sdr, priceSessionID);
 
