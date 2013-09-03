@@ -27,9 +27,15 @@ namespace TT
     public class SendMsg
     {
         private static LOG.LogFiles log = new LOG.LogFiles();
+        /// <summary>
+        /// 
+        /// </summary>
         public static void initializeLog()
         { log.CreateLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.ToString(), null); }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public static ArrayList inflightOrders = new ArrayList();
 
         public static QuickFix.SessionID priceSessionID;
@@ -42,7 +48,6 @@ namespace TT
         /// <summary>
         /// Submit a FIX message to subscribe to gateway status.  Status is displayed but no action is attached.
         /// </summary>
-        /// <param name="session"></param>
         /// <param name="SubscriptionRequestType"></param>
         public void ttGatewayStatusRequest(char SubscriptionRequestType)
         {
@@ -63,7 +68,6 @@ namespace TT
         /// <summary>
         /// Submit FIX request to retreive all the days trades, SODs and manual Fills
         /// </summary>
-        /// <param name="session"></param>
         /// <param name="reqtype"></param>
         public void ttRequestForPosition(int reqtype)
         {
@@ -107,6 +111,7 @@ namespace TT
         /// For eurex this is the ticker and expiration</param>
         /// <param name="qty">order quantity</param>
         /// <param name="bs">buy or sell</param>
+        /// <param name="gateway">TT gateway name</param>
         public void ttNewOrderSingle(string _account, string SecEx, string symbol, string secID, decimal qty, char bs, string gateway)
         {
             try
