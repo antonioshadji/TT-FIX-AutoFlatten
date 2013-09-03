@@ -1,0 +1,15 @@
+<?xml version="1.0" standalone="yes"?>
+<dsRisk xmlns="http://tempuri.org/dsRisk.xsd">
+  <tblTrader>
+    <MGT>TTORDSLAMH001</MGT>
+    <Account>sl5302</Account>
+    <Limit>-600</Limit>
+    <EmailAlert>0</EmailAlert>
+  </tblTrader>
+  <tblTrader>
+    <MGT>TTORDSL002004</MGT>
+    <Account>sl002004</Account>
+    <Limit>-130000</Limit>
+    <EmailAlert>0</EmailAlert>
+  </tblTrader>
+</dsRisk>

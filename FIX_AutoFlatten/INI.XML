@@ -1,0 +1,47 @@
+<?xml version="1.0" standalone="yes"?>
+<INI>
+  <!--
+  <address>
+    <to>Antonios@tradingtechnologies.com</to>
+    <cc>Antonios@tradingtechnologies.com</cc>
+    <bcc>Antonios@tradingtechnologies.com</bcc>
+    <subject>Limit 2000 reached</subject>
+    <body>First limit reached</body>
+    <priority>low</priority>
+    <limit>100</limit>
+  </address>
+  <address>
+    <to>Antonios@tradingtechnologies.com</to>
+    <cc>Antonios@tradingtechnologies.com</cc>
+    <bcc>Antonios@tradingtechnologies.com</bcc>
+    <subject>Limit 4000 reached</subject>
+    <body>Second limit reached</body>
+    <priority>normal</priority>
+    <limit>200</limit>
+  </address>
+  <address>
+    <to>Antonios@tradingtechnologies.com</to>
+    <cc>Antonios@tradingtechnologies.com</cc>
+    <bcc>Antonios@tradingtechnologies.com</bcc>
+    <subject>Limit 8000 reached</subject>
+    <body>Third limit reached</body>
+    <priority>normal</priority>
+    <limit>300</limit>
+  </address>
+  <parameters>
+    <FROM>Antonios@tradingtechnologies.com</FROM>
+    <SERVER>serveraddress</SERVER>
+    <PORT>25</PORT>
+    <SSL>false</SSL>
+    <LOGIN>user</LOGIN>
+    <PWORD>password</PWORD>
+  </parameters>
+  -->
+  <settings>
+    <baseCurrency>EUR</baseCurrency>
+    <resetTime>17:45:00</resetTime>
+    <AccountFilter>TRUE</AccountFilter>
+	<DEBUG>TRUE</DEBUG>
+  </settings>
+
+</INI>
