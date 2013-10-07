@@ -303,12 +303,13 @@ namespace QuickFix
                     _logFactory,
                     _messageFactory);
 
+                
                 _initiator.start();
             }
-            catch (Exception ex)
+            catch (QuickFix.ConfigError err)
             { 
-                updateDisplay("QuickFIX Error"); 
-                log.WriteLog(ex.ToString()); 
+                updateDisplay(string.Format("QuickFIX Error: {0}", err.Message)); 
+                log.WriteLog(err.ToString()); 
             }
 
         }
