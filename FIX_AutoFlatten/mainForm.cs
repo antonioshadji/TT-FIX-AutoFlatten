@@ -21,6 +21,9 @@ using System.Windows.Forms;
 
 namespace FIX_AutoFlatten
 {
+    /// <summary>
+    /// program start class
+    /// </summary>
     public partial class mainForm : Form
     {
         /// <summary>
@@ -64,7 +67,7 @@ namespace FIX_AutoFlatten
 
                 log.CreateLog("AUTOFLAT", this.listBox1);
                 this.Text += " v" + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
-                log.WriteLog(this.Text);
+                //log.WriteLog(this.Text);
 
                 _qf = new QuickFix.QFApplication();
 
@@ -324,11 +327,6 @@ namespace FIX_AutoFlatten
             { log.WriteList(ex.ToString()); }
         }
 
-        /// <summary>
-        /// check is email server exists
-        /// </summary>
-        /// <param name="serverAddress"></param>
-        /// <returns></returns>
         //Ping test code must be Set up to run on separate thread to prevent application from hanging
         //private bool _PingTest(string serverAddress)
         //{
@@ -472,9 +470,7 @@ namespace FIX_AutoFlatten
             { log.WriteList(ex.ToString()); }
         }
 
-        /// <summary>
-        /// check what actions must be taken based on limits and P&L
-        /// </summary>
+        // check what actions must be taken based on limits and P&L
         private void checkPnLAction()
         {
             try
@@ -926,7 +922,7 @@ namespace FIX_AutoFlatten
         /// <summary>
         /// This event starts off ticking every second when application starts and at the end of first minute
         /// slows to checking time once per minute.
-        /// If current time = the time Set on the application for reset; all p&L and positions are cleared off 
+        /// If current time = the time Set on the application for reset all PNL and positions are cleared off 
         /// and email alerts are reset to start at first alert.
         /// </summary>
         /// <param name="sender"></param>

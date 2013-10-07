@@ -15,6 +15,7 @@ using System;
 using System.Text;
 using System.IO;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace LOG
 {
@@ -42,7 +43,9 @@ namespace LOG
             //    this.logFileExt = fileName.Substring(fileName.IndexOf(".") + 1, fileName.Length - (fileName.IndexOf(".") + 1));
             //}
             //else
-            { this.logFileName = fileName; }
+            //{ 
+                this.logFileName = fileName; 
+            //}
 
             logFile = Application.StartupPath.ToString() + @"\appLOG";
 
@@ -53,7 +56,7 @@ namespace LOG
                 try
                 { Directory.CreateDirectory(logFile); }
                 catch (Exception e)
-                { MessageBox.Show("CREATELOG: " + e.ToString()); }
+                { Debug.WriteLine("CREATELOG: " + e.ToString()); }
             }
 
             logFile += @"\" + logFileName + "_";
@@ -71,10 +74,10 @@ namespace LOG
                     //Warning	395	CA2000 : Microsoft.Reliability : 
                     //In method 'LogFiles.CreateLog(string, ListBox)', call System.IDisposable.Dispose on object 'tw' before all references to it are out of scope.	C:\Users\ahadjigeorgalis\Documents\GitHub\TT-FIX-AutoFlatten\FIX_AutoFlatten\LogFiles.cs	70	FIX_AutoFlatten
                     //warning still shows after edit
-                    tw.Dispose();
+                    //tw.Dispose();
                 }
                 catch (Exception e)
-                { MessageBox.Show("CREATELOG: " + e.ToString()); }
+                { Debug.WriteLine("CREATELOG: " + e.ToString()); }
             }
         }
 
@@ -90,7 +93,7 @@ namespace LOG
                 { logTextWriter.Close(); }
             }
             catch (Exception e)
-            { MessageBox.Show("WRITELOG:" + e.ToString()); }
+            { Debug.WriteLine("CloseLog:" + e.ToString()); }
         }
 
         /// <summary>
@@ -118,7 +121,7 @@ namespace LOG
                 ctr++;
             }
             catch (Exception e)
-            { MessageBox.Show("WRITELOG:" + e.ToString()); }
+            { Debug.WriteLine(DateTime.Now.ToString() + ": WRITELOG:" + System.Environment.NewLine + e.ToString()); }
 
         }
 
@@ -174,7 +177,7 @@ namespace LOG
                         catch (System.IO.IOException e)
                         {
                            // WriteLog("CLEAN: " + e.ToString());
-                            MessageBox.Show("CLEAN: " + e.ToString());
+                            Debug.WriteLine("CleanLog: " + e.ToString());
                         }
                     }
                 }

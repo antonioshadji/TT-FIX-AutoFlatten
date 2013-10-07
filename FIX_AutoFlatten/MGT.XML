@@ -12,4 +12,10 @@
     <Limit>-130000</Limit>
     <EmailAlert>0</EmailAlert>
   </tblTrader>
+  <tblTrader>
+    <MGT>TTORDSLASG007</MGT>
+    <Account>sl5302</Account>
+    <Limit>-100</Limit>
+    <EmailAlert>0</EmailAlert>
+  </tblTrader>
 </dsRisk>
