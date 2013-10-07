@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<INI>
+  
+  <settings>
+    <baseCurrency>EUR</baseCurrency>
+    <resetTime>17:45:00</resetTime>
+    <AccountFilter>TRUE</AccountFilter>
+    <DEBUG>TRUE</DEBUG>
+  </settings>
+
+</INI>

@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<dsRisk xmlns="http://tempuri.org/dsRisk.xsd">
+  <tblCurrency>
+    <Currency>USD</Currency>
+    <USD>1</USD>
+    <EUR>1</EUR>
+  </tblCurrency>
+  <tblCurrency>
+    <Currency>EUR</Currency>
+    <USD>1</USD>
+    <EUR>1</EUR>
+    <GBP>1</GBP>
+  </tblCurrency>
+  <tblCurrency>
+    <Currency>GBP</Currency>
+    <GBP>1</GBP>
+  </tblCurrency>
+  <tblCurrency>
+    <Currency>JPY</Currency>
+    <JPY>1</JPY>
+  </tblCurrency>
+  <tblCurrency>
+    <Currency>CAD</Currency>
+    <CAD>1</CAD>
+  </tblCurrency>
+  <tblCurrency>
+    <Currency>AUS</Currency>
+    <AUS>1</AUS>
+  </tblCurrency>
+</dsRisk>
