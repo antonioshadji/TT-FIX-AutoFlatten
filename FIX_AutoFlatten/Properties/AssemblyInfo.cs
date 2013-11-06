@@ -32,5 +32,10 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 
-[assembly: AssemblyVersion("2010.1.26.12")]
-[assembly: AssemblyFileVersion("2010.10.11.13")]
+//You'll get an auto set of the last two sections (Build Number and Revision). And this auto-increment works as follows:
+//Build Number: Days since 1.1.2000
+//Revision: Seconds since midnight divided by two
+
+//version number original year build.current year build.
+[assembly: AssemblyVersion("2010.2013.*")]
+//[assembly: AssemblyFileVersion("2010.10.11.13")]
